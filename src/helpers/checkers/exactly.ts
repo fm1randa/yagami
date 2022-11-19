@@ -1,10 +1,10 @@
 /**
  * Executes command if the message body matches exactly the trigger
- * @param body Message to be body checked
- * @param string String to be looked for in the message
+ * @param value Message to be body checked
+ * @param expected String to be looked for in the message
  */
-function exactly(body: string, string: string) {
-	return body.trim() === string;
+function exactly(value: string, expected: string) {
+	return value.trim() === expected;
 }
 
 export default exactly;
