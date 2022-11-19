@@ -28,7 +28,7 @@ export interface YagamiOptions extends ClientOptions {
 	handleSignups?: boolean;
 }
 
-export default class Yagami extends Client {
+export default class YagamiClient extends Client {
 	public commands: Command[];
 	public authStrategy: LocalAuth;
 	public clientId: string;

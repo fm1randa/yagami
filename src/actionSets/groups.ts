@@ -2,7 +2,7 @@ import Group from "../app/models/Group";
 import { logger } from "../helpers";
 import GroupCollection from "../app/collections/Group";
 import { Message } from "whatsapp-web.js";
-import Yagami from "../Yagami";
+import YagamiClient from "../YagamiClient";
 
 class Groups {
 	async listGroups(message: Message) {
@@ -16,7 +16,7 @@ class Groups {
 		}
 	}
 
-	async addGroup(message: Message, client: Yagami) {
+	async addGroup(message: Message, client: YagamiClient) {
 		try {
 			const idSerialized = message.from;
 			const group = await GroupCollection.getById(idSerialized);

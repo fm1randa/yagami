@@ -1,4 +1,4 @@
-import Yagami from "../Yagami";
+import YagamiClient from "../YagamiClient";
 import { Message, Reaction } from "whatsapp-web.js";
 import groups from "../actionSets/groups";
 import users from "../actionSets/users";
@@ -12,7 +12,7 @@ import { MessageProps, TriggerType } from "../Command";
 type MatchesOptionsType = {
 	message: Message;
 	trigger: TriggerType;
-	client: Yagami;
+	client: YagamiClient;
 };
 type ChatPermissions = {
 	groupIsVIP: boolean;
@@ -21,7 +21,7 @@ type ChatPermissions = {
 };
 
 export default class ClientHelpers {
-	static async cleanupGroup(message: Message, client: Yagami) {
+	static async cleanupGroup(message: Message, client: YagamiClient) {
 		const contact = await client.getContactById(message.from);
 		const chat = await contact.getChat();
 		if (!chat || !chat.isGroup) return;
@@ -37,7 +37,7 @@ export default class ClientHelpers {
 		}
 	}
 
-	static handleSignups(message: Message, client: Yagami) {
+	static handleSignups(message: Message, client: YagamiClient) {
 		users.addUser(message);
 		groups.addGroup(message, client);
 	}
@@ -135,7 +135,7 @@ export default class ClientHelpers {
 		return UserCollection.getById(contact.id._serialized);
 	}
 
-	static async isFromVIPGroup(message: Message, client: Yagami) {
+	static async isFromVIPGroup(message: Message, client: YagamiClient) {
 		const contact = await client.getContactById(message.from);
 		if (!contact.isGroup) {
 			return false;
@@ -160,7 +160,7 @@ export default class ClientHelpers {
 	}: {
 		message: Message;
 		restricted: boolean;
-		client: Yagami;
+		client: YagamiClient;
 	}): Promise<ChatPermissions> {
 		const chatPermissions: ChatPermissions = {
 			groupIsVIP: await this.isFromVIPGroup(message, client),
@@ -204,7 +204,7 @@ export default class ClientHelpers {
 		return replies;
 	}
 
-	static async getReactionMessage(reaction: Reaction, client: Yagami) {
+	static async getReactionMessage(reaction: Reaction, client: YagamiClient) {
 		try {
 			const chat = await client.getChatById(reaction.id.remote);
 			const recentMessages = await chat.fetchMessages({ limit: 10 });
