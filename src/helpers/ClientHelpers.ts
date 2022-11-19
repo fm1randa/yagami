@@ -7,7 +7,7 @@ import UserCollection from "../app/collections/User";
 import GroupCollection from "../app/collections/Group";
 import { getMsUntilNow } from ".";
 import logger from "./logger";
-import { MessageProps, TriggerType } from "src/Command";
+import { MessageProps, TriggerType } from "../Command";
 
 type MatchesOptionsType = {
 	message: Message;
