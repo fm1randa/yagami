@@ -1,7 +1,7 @@
 import User from "../app/models/User";
 import UserCollection from "../app/collections/User";
 import { Client, Message } from "whatsapp-web.js";
-import { chooseContact, logger } from "src/helpers";
+import { chooseContact, logger } from "helpers";
 
 class Admins {
 	async listAdmins(message: Message) {
