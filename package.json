@@ -1,9 +1,9 @@
 {
-    "name": "yagami",
-    "version": "1.0.0",
+    "name": "wwebjs-yagami",
+    "version": "1.0.1",
     "description": "",
-    "main": "dist/Yagami.js",
-    "types": "dist/Yagami.d.ts",
+    "main": "dist/src/Yagami.js",
+    "types": "dist/src/Yagami.d.ts",
     "build": "tsc",
     "scripts": {
         "build": "rm -rf ./dist && npx tsc -p tsconfig.json"
