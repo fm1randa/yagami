@@ -3,6 +3,8 @@
 - [🤖 Yagami](#-yagami)
   - [📝 Description](#-description)
   - [💡 Usage](#-usage)
+    - [⬆️ Install](#️-install)
+    - [🔎 Example:](#-example)
   - [👾 Clients](#-clients)
   - [🕹 Commands](#-commands)
   - [⚙️ Environment variables](#️-environment-variables)
@@ -20,10 +22,15 @@
 
 ## 💡 Usage
 
+### ⬆️ Install
+
+```bash
+npm install wwebjs-yagami
+```
+
+### 🔎 Example:
+
 **🚨 You must import `connectToDatabase` and call that function before instantiating Yagami Client.**
-
-Example:
-
 _See [commands.md](commands.md) for more info about `import commands from "./commands";`_
 
 ```ts

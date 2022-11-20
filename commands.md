@@ -2,18 +2,18 @@
 
 - [🕹 Commands](#-commands)
   - [📒 Summary](#-summary)
-  - [Example:](#example)
-    - [action.ts](#actionts)
-    - [commands.ts](#commandsts)
+  - [🔎 Example:](#-example)
+    - [📄 action.ts](#-actionts)
+    - [📄 commands.ts](#-commandsts)
   - [🗳 Registering commands](#-registering-commands)
   - [▶️ Command execution](#️-command-execution)
   - [🆕 How to create commands](#-how-to-create-commands)
   - [📃 `Command` attributes](#-command-attributes)
-    - [description](#description)
-    - [attributes](#attributes)
-    - [trigger](#trigger)
-    - [action](#action)
-    - [MessageProps](#messageprops)
+    - [🔑 description](#-description)
+    - [🔑 attributes](#-attributes)
+    - [🔑 trigger](#-trigger)
+    - [🔑 action](#-action)
+    - [🌐 MessageProps](#-messageprops)
 
 ## 📒 Summary
 
@@ -21,9 +21,9 @@ The [main library](./README.md#main-dependencies) provides some event listeners.
 
 A command runs on `message_create` listener. When a new message is received, Yagami Client handles user and group registration, then executes the command execution process.
 
-## Example:
+## 🔎 Example:
 
-### action.ts
+### 📄 action.ts
 
 ```ts
 export default function action(message: Message, client: YagamiClient) {
@@ -32,7 +32,7 @@ export default function action(message: Message, client: YagamiClient) {
 }
 ```
 
-### commands.ts
+### 📄 commands.ts
 
 ```ts
 import action from "./action";
@@ -79,11 +79,11 @@ Each command receives a string of **description** and an object of **attributes*
 
 ## 📃 `Command` attributes
 
-### description
+### 🔑 description
 
 The command description is a short text that explains what it will do when its `trigger` is activated. It will help **developer** to understand.
 
-### attributes
+### 🔑 attributes
 
 The attributes are the `command`'s principal characteristics. They involve how will be its behavior (action), permissioning (restricted), etc.
 
@@ -95,7 +95,7 @@ The attributes are the `command`'s principal characteristics. They involve how w
 | help                   | string        | A longer text that will explain for the user what the command will do.                                                                                           |
 | countAsCommandExecuted | boolean       | If `true`, the command will count as `CommandExecuted`. In other words, every time that this command is executed, it will sum +1 in the executed commands count. |
 
-### trigger
+### 🔑 trigger
 
 The trigger is the object that will tell how will be the trigger of the command action. Basically it's composed of which text will be searched, where and how it will be searched (check rule).
 
@@ -107,13 +107,13 @@ The trigger is the object that will tell how will be the trigger of the command 
 | inPrivateChat? | MessageProps \| MessageProps [] | It's the object that will tell which attributes will be checked in the private chat message. [See more](#messageprops)                                                   |
 | inAnyChat?     | MessageProps \| MessageProps [] | It's the object that will tell which attributes will be checked in any chat. This config will overrite the others. [See more](#messageprops)                             |
 
-### action
+### 🔑 action
 
 It's the function that the bot will execute when the message matches the `trigger` activation rules. It receives the string `message` object and the YagamiClient `client` object.
 
 See [above example](#actionts).
 
-### MessageProps
+### 🌐 MessageProps
 
 You may set the `trigger` to check for some specific message properties. For example:
 
