@@ -28,7 +28,7 @@
 npm install wwebjs-yagami
 ```
 
-### 🔎 Example:
+### 🔎 Example
 
 **🚨 You must import `connectToDatabase` and call that function before instantiating Yagami Client.**
 _See [commands.md](commands.md) for more info about `import commands from "./commands";`_
