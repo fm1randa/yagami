@@ -30,9 +30,6 @@ npm install wwebjs-yagami
 
 ### 🔎 Example
 
-**🚨 You must import `connectToDatabase` and call that function before instantiating Yagami Client.**
-_See [commands.md](commands.md) for more info about `import commands from "./commands";`_
-
 ```ts
 import { YagamiClient, connectToDatabase } from "wwebjs-yagami";
 import commands from "./commands";
@@ -66,6 +63,12 @@ async function main() {
 }
 main();
 ```
+
+Obs:
+
+**🚨 You must import `connectToDatabase` and call that function before instantiating Yagami Client.**
+
+See [commands.md](commands.md) for more info about `commands`.
 
 ## 👾 Clients
 
