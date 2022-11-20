@@ -4,7 +4,7 @@
   - [📝 Description](#-description)
   - [💡 Usage](#-usage)
     - [⬆️ Install](#️-install)
-    - [🔎 Example:](#-example)
+    - [🔎 Example](#-example)
   - [👾 Clients](#-clients)
   - [🕹 Commands](#-commands)
   - [⚙️ Environment variables](#️-environment-variables)
