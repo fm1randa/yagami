@@ -37,13 +37,15 @@ export default function action(message: Message, client: YagamiClient) {
 ```ts
 import action from "./action";
 import { Command } from "wwebjs-yagami";
+import { MessageTypes } from "whatsapp-web.js";
+
 const commands = [
   new Command("Hello world command", {
     trigger: {
       mainText: "!hello",
-      mainCheckRule: "contains",
+      mainCheckRule: "includes",
       inAnyChat: {
-        type: "text",
+        type: MessageTypes.TEXT,
         body: {
           checkRule: "exactly",
           text: "!hw", // H ello W orld
