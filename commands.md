@@ -37,13 +37,15 @@ export default function action(message: Message, client: YagamiClient) {
 ```ts
 import action from "./action";
 import { Command } from "wwebjs-yagami";
+import { MessageTypes } from "whatsapp-web.js";
+
 const commands = [
   new Command("Hello world command", {
     trigger: {
       mainText: "!hello",
-      mainCheckRule: "contains",
+      mainCheckRule: "includes",
       inAnyChat: {
-        type: "text",
+        type: MessageTypes.TEXT,
         body: {
           checkRule: "exactly",
           text: "!hw", // H ello W orld
@@ -58,6 +60,14 @@ const commands = [
 ];
 export default commands;
 ```
+
+Your bot will behave like that:
+
+<img width="288" alt="image" src="https://user-images.githubusercontent.com/35941797/202932690-5dbefded-c27f-4594-89b2-41b8e6909534.png">
+
+And this will be printed in the terminal:
+
+<img width="441" alt="image" src="https://user-images.githubusercontent.com/35941797/202932769-d22b43bc-8295-4a2c-b26c-19dcfd874992.png">
 
 ## 🗳 Registering commands
 

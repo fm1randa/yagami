@@ -70,6 +70,11 @@ Obs:
 
 See [commands.md](commands.md) for more info about `commands`.
 
+After running `npm start` or `npm run compile` (build + start), you'll see that in the terminal:
+
+<img width="555" alt="image" src="https://user-images.githubusercontent.com/35941797/202930336-2c235b51-b8df-4e06-a2cd-09d94a5b7639.png">
+
+
 ## 👾 Clients
 
 It's possible to have many concurrent clients. In other words, you can manage more than one bot simultaneously with one Node instance.
