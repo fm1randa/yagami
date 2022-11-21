@@ -28,7 +28,7 @@ class Admins {
       if (admin && admin.isAdmin)
         return message.reply("This contact is already an admin.");
       await UserCollection.addAdmin(contact.id._serialized);
-      return message.reply(`🤖 ${admin.name} is now an bot admin!`);
+      return message.reply(`🤖 ${admin.name} is now a bot admin!`);
     } catch (error) {
       const outputMessage = ((error: any) =>
         `Error while adding admin: ${error}`)(error);
