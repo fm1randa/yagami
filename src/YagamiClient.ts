@@ -120,12 +120,10 @@ export default class YagamiClient extends Client {
           reaction,
           this
         );
-        if (reactionMessage.fromMe) {
-          reactionMessage.delete(true);
-        }
+        reactionMessage.delete(true);
       } catch (error) {
-        logger.error(
-          'Ocorreu um erro ao deletar uma mensagem reagida com "❌"',
+        logger.debug(
+          'Error while trying to delete message with reaction "❌".',
           error
         );
       }
@@ -169,7 +167,7 @@ export default class YagamiClient extends Client {
     const { count, finalExecutionDate } = await measureExecutionTime(
       async () => {
         const logReactError = (error: Error) =>
-          logger.error("Erro ao reagir à mensagem.", error);
+          logger.debug("Error while reacting to message.", error);
         await message.react("🔄").catch(logReactError);
         await action(message, this);
         message.react("✅").catch(logReactError);
@@ -234,41 +232,5 @@ export default class YagamiClient extends Client {
       freeMemString +
       divider;
     logger.info(output);
-  }
-
-  restoreSessionBackup() {
-    logger.info(`${this.clientId} RESTORING SESSION BACKUP...`);
-    remove(path.join("./", `.wwebjs_auth_${this.clientId}`), async () => {
-      try {
-        await copyDir(
-          path.join("./", `.wwebjs_auth_${this.clientId}` + "_BACKUP"),
-          path.join("./", `.wwebjs_auth_${this.clientId}`)
-        );
-        logger.info(`${this.clientId} SESSION RESTORED`);
-        this.initialize();
-        logger.info(`${this.clientId} is trying to initializing again...`);
-      } catch (error) {
-        logger.error(`${this.clientId} ERROR RESTORING SESSION BACKUP`, error);
-      }
-    });
-  }
-
-  createSessionBackup() {
-    logger.info(`${this.clientId} CREATING SESSION BACKUP...`);
-    remove(path.join("/", `.wwebjs_auth_${this.clientId}` + "_BACKUP"), () => {
-      copyDir(
-        path.join("./", `.wwebjs_auth_${this.clientId}`),
-        path.join("./", `.wwebjs_auth_${this.clientId}` + "_BACKUP")
-      )
-        .then(() => {
-          logger.info(`${this.clientId} SESSION BACKUP CREATED`);
-        })
-        .catch((error) =>
-          logger.error(
-            `${this.clientId} ERROR CREATING SESSION BACKUP: `,
-            error
-          )
-        );
-    });
   }
 }
