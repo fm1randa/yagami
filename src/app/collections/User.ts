@@ -1,6 +1,8 @@
-import mongoose from "mongoose";
 import { logger } from "../../helpers";
 import User from "../models/User";
+import mongooseState from "./mongooseState";
+
+const mongoose = mongooseState.mongoose;
 
 const UserSchema = new mongoose.Schema({
   contactId: Object,
@@ -60,6 +62,7 @@ class UserCollection {
     return user;
   }
   async getById(_serialized: string) {
+    console.log(UserModel.db.host)
     const user: User = (await UserModel.findOne({
       "contactId._serialized": _serialized,
     }).exec()) as User;

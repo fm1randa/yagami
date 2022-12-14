@@ -1,5 +1,7 @@
-import mongoose from "mongoose";
 import Group from "../models/Group";
+import mongooseState from "./mongooseState";
+
+const mongoose = mongooseState.mongoose;
 
 const GroupSchema = new mongoose.Schema({
   contactId: Object,
