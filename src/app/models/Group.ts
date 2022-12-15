@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import { ChatId } from "whatsapp-web.js";
-import GroupCollection from "../collections/Group";
+import globalStates from "../../globalStates";
 
 type GroupPrimaryAttributes = {
-  _id?: mongoose.Types.ObjectId;
+  _id?: Types.ObjectId;
   contactId: ChatId;
   name: string;
 };
 export default class Group {
-  public _id?: mongoose.Types.ObjectId;
+  public _id?: Types.ObjectId;
   public contactId: ChatId;
   public name: string;
   public totalCommandsCalled: number;
@@ -26,11 +26,13 @@ export default class Group {
     this.lastCleanup = null;
   }
 
-  async save() {
-    const find = await GroupCollection.getById(this.contactId._serialized);
+  // TODO improve it later (maybe?)
+  save = async () => {
+    const { groupCollection } = globalStates;
+    const find = await groupCollection.getById(this.contactId._serialized);
     if (find) {
-      return GroupCollection.update(this.contactId._serialized, this);
+      return groupCollection.update(this.contactId._serialized, this);
     }
-    return GroupCollection.create(this);
-  }
+    return groupCollection.create(this);
+  };
 }

@@ -1,13 +1,16 @@
 import YagamiClient from "../YagamiClient";
 import { Message, Reaction } from "whatsapp-web.js";
-import groups from "../actionSets/groups";
-import users from "../actionSets/users";
+import groupActionSet from "../actionSets/GroupActionSet";
+import userActionSet from "../actionSets/UserActionSet";
 import User from "../app/models/User";
 import UserCollection from "../app/collections/User";
 import GroupCollection from "../app/collections/Group";
 import { getMsUntilNow } from ".";
 import logger from "./logger";
 import { MessageProps, TriggerType } from "../Command";
+import mongooseState from "../globalStates";
+import UserActionSet from "../actionSets/UserActionSet";
+import GroupActionSet from "../actionSets/GroupActionSet";
 
 type MatchesOptionsType = {
   message: Message;
@@ -19,11 +22,22 @@ type ChatPermissions = {
 };
 
 export default class ClientHelpers {
-  static async cleanupGroup(message: Message, client: YagamiClient) {
+  private userCollection: UserCollection;
+  private groupCollection: GroupCollection;
+  private userActionSet: UserActionSet;
+  private groupActionSet: GroupActionSet;
+  constructor() {
+    const { userCollection, groupCollection } = mongooseState;
+    this.userCollection = userCollection;
+    this.groupCollection = groupCollection;
+    this.userActionSet = new UserActionSet();
+    this.groupActionSet = new GroupActionSet();
+  }
+  async cleanupGroup(message: Message, client: YagamiClient) {
     const contact = await client.getContactById(message.from);
     const chat = await contact.getChat();
     if (!chat || !chat.isGroup) return;
-    const group = await GroupCollection.getById(chat.id._serialized);
+    const group = await this.groupCollection.getById(chat.id._serialized);
     if (!group) return;
     if (
       !group.lastCleanup ||
@@ -35,9 +49,9 @@ export default class ClientHelpers {
     }
   }
 
-  static handleSignups(message: Message, client: YagamiClient) {
-    users.addUser(message);
-    groups.addGroup(message, client);
+  handleSignups(message: Message, client: YagamiClient) {
+    this.userActionSet.addUser(message);
+    this.groupActionSet.addGroup(message, client);
   }
 
   static isUselessMessage(message: Message) {
@@ -114,21 +128,21 @@ export default class ClientHelpers {
     return user && user.isAdmin;
   }
 
-  static async getUserFromMessage(message: Message) {
+  async getUserFromMessage(message: Message) {
     const contact = await message.getContact();
-    return UserCollection.getById(contact.id._serialized);
+    return this.userCollection.getById(contact.id._serialized);
   }
 
-  static async hasUserPermission(message: Message, restricted: boolean) {
+  async hasUserPermission(message: Message, restricted: boolean) {
     const user = await this.getUserFromMessage(message);
-    const fromAdmin = await this.isAdmin(user);
+    const fromAdmin = await ClientHelpers.isAdmin(user);
     if (restricted && !fromAdmin) {
       return false;
     }
     return true;
   }
 
-  static async checkPermissions({
+  async checkPermissions({
     message,
     restricted,
   }: {
@@ -136,8 +150,9 @@ export default class ClientHelpers {
     restricted: boolean;
     client: YagamiClient;
   }): Promise<ChatPermissions> {
+    const userHasPermission = await this.hasUserPermission(message, restricted);
     const chatPermissions: ChatPermissions = {
-      userHasPermission: await this.hasUserPermission(message, restricted),
+      userHasPermission,
     };
     return chatPermissions;
   }

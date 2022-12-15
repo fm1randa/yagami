@@ -1,41 +1,41 @@
+import { Mongoose, Model } from "mongoose";
 import { logger } from "../../helpers";
 import User from "../models/User";
-import mongooseState from "./mongooseState";
 
-const mongoose = mongooseState.mongoose;
-
-const UserSchema = new mongoose.Schema({
-  contactId: Object,
-  name: String,
-  totalCommandsCalled: Number,
-  lastCommandExecuted: Date,
-  isAdmin: Boolean,
-  banned: Boolean,
-  isMyContact: Boolean,
-});
-
-const UserModel = mongoose.model("users", UserSchema);
-
-class UserCollection {
-  async getAll() {
-    const users: User[] = (await UserModel.find().exec()) as User[];
-    return users;
+export default class UserCollection {
+  private UserModel: Model<User>;
+  constructor(mongoose: Mongoose) {
+    const UserSchema = new mongoose.Schema({
+      contactId: Object,
+      name: String,
+      totalCommandsCalled: Number,
+      lastCommandExecuted: Date,
+      isAdmin: Boolean,
+      banned: Boolean,
+      isMyContact: Boolean,
+    });
+    this.UserModel = mongoose.model<User>("users", UserSchema);
   }
 
-  async getAdmins() {
+  getAll = async () => {
+    const users: User[] = (await this.UserModel.find().exec()) as User[];
+    return users;
+  };
+
+  getAdmins = async () => {
     const admins: User[] = (await this.find({ isAdmin: true })) as User[];
     return admins;
-  }
+  };
 
-  async addAdmin(_serialized: string) {
+  addAdmin = async (_serialized: string) => {
     return this.update(_serialized, { isAdmin: true });
-  }
+  };
 
-  async removeAdmin(_serialized: string) {
+  removeAdmin = async (_serialized: string) => {
     return this.update(_serialized, { isAdmin: false });
-  }
+  };
 
-  async increaseTotalCommandsCalled(_serialized: string) {
+  increaseTotalCommandsCalled = async (_serialized: string) => {
     try {
       await this.update(_serialized, {
         $inc: { totalCommandsCalled: 1 },
@@ -49,42 +49,39 @@ class UserCollection {
         error
       );
     }
-  }
+  };
 
-  async find(query: object) {
-    return UserModel.find(query).exec();
-  }
+  find = async (query: object) => {
+    return this.UserModel.find(query).exec();
+  };
 
-  async getByName(name: string) {
-    const user: User[] = (await UserModel.find({
+  getByName = async (name: string) => {
+    const user: User[] = (await this.UserModel.find({
       name,
     }).exec()) as User[];
     return user;
-  }
-  async getById(_serialized: string) {
-    console.log(UserModel.db.host)
-    const user: User = (await UserModel.findOne({
+  };
+  getById = async (_serialized: string) => {
+    const user: User = (await this.UserModel.findOne({
       "contactId._serialized": _serialized,
     }).exec()) as User;
     return user;
-  }
+  };
 
-  async create(user: User) {
-    const createdUser = new UserModel(user);
+  create = async (user: User) => {
+    const createdUser = new this.UserModel(user);
     await createdUser.save();
     return createdUser;
-  }
+  };
 
-  async update(_serialized: string, update: object) {
-    return UserModel.findOneAndUpdate(
+  update = async (_serialized: string, update: object) => {
+    return this.UserModel.findOneAndUpdate(
       { "contactId._serialized": _serialized },
       update
     );
-  }
+  };
 
-  async delete(_serialized: string) {
-    return UserModel.deleteOne({ contactId: { _serialized } }).exec();
-  }
+  delete = async (_serialized: string) => {
+    return this.UserModel.deleteOne({ contactId: { _serialized } }).exec();
+  };
 }
-
-export default new UserCollection();

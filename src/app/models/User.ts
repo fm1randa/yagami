@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import { ContactId } from "whatsapp-web.js";
 
 type UserPrimaryAttributes = {
-  _id?: mongoose.Types.ObjectId;
+  _id?: Types.ObjectId;
   contactId: ContactId;
   name: string;
   isMyContact: boolean;
 };
 export default class User {
-  public _id?: mongoose.Types.ObjectId;
+  public _id?: Types.ObjectId;
   public contactId: ContactId;
   public name: string;
   public totalCommandsCalled: number;

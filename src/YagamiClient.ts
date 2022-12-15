@@ -16,7 +16,7 @@ import {
   measureExecutionTime,
 } from "./helpers";
 import os from "os";
-import defaultCommands from "./commands/defaultCommands";
+import getDefaultCommands from "./commands/defaultCommands";
 
 export type CommandExecuted = {
   command: Command;
@@ -38,6 +38,7 @@ export default class YagamiClient extends Client {
   public commandsExecuted: number;
   constructor(commmands: Command[], options: YagamiOptions) {
     super(options);
+    const defaultCommands = getDefaultCommands();
     this.commands = [...defaultCommands, ...commmands];
     this.authStrategy = options.authStrategy;
     this.clientId = this.authStrategy.clientId;
@@ -88,7 +89,7 @@ export default class YagamiClient extends Client {
         } client is ready! Version: ${await this.getWWebVersion()}`
       );
     });
-    this.on(
+    /* this.on(
       "command_executed",
       async (commandExecuted: CommandExecuted, message: Message) => {
         const user = await message.getContact();
@@ -101,11 +102,12 @@ export default class YagamiClient extends Client {
         }
         this.logCommandExecuted(commandExecuted);
       }
-    );
+    ); */
 
     this.on("message_create", async (message) => {
+      const { handleSignups } = new ClientHelpers();
       if (this.handleSignups) {
-        ClientHelpers.handleSignups(message, this);
+        handleSignups(message, this);
       }
       if (ClientHelpers.isUselessMessage(message)) {
         return;
@@ -146,6 +148,7 @@ export default class YagamiClient extends Client {
   }
 
   async executeCommand(message: Message, command: Command) {
+    const clientHelpers = new ClientHelpers();
     const { action, trigger, restricted } = command.attributes;
     const messageMatchesTrigger: boolean = await ClientHelpers.matches({
       client: this,
@@ -155,7 +158,7 @@ export default class YagamiClient extends Client {
     if (!messageMatchesTrigger) {
       return;
     }
-    const { userHasPermission } = await ClientHelpers.checkPermissions({
+    const { userHasPermission } = await clientHelpers.checkPermissions({
       client: this,
       message,
       restricted,
