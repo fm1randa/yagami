@@ -20,6 +20,11 @@ type MatchesOptionsType = {
 type ChatPermissions = {
   userHasPermission: boolean;
 };
+interface MessageBodyObject {
+  mimetype: string;
+  data: string;
+}
+type MessageBody = string | MessageBodyObject;
 
 export default class ClientHelpers {
   private userCollection: UserCollection;
@@ -55,11 +60,17 @@ export default class ClientHelpers {
   }
 
   static isUselessMessage(message: Message) {
+    const checkMessageBody = (body: MessageBody) => {
+      if (typeof body === "string") {
+        return message.body.includes("🤖");
+      }
+      return true;
+    };
     return (
       message.type === "sticker" ||
       message.type === "audio" ||
       message.type === "ptt" ||
-      message.body.includes("🤖")
+      checkMessageBody(message.body)
     );
   }
 
@@ -80,6 +91,9 @@ export default class ClientHelpers {
         if (prop === "body") {
           const { checkRule, text } = messageProps[prop];
           const checker = client.getChecker(checkRule);
+          if (typeof message.body !== "string") {
+            return false;
+          }
           if (Array.isArray(text)) {
             return text.some((text) => checker(message.body, text));
           }
@@ -102,6 +116,9 @@ export default class ClientHelpers {
       try {
         const { mainCheckRule, mainText } = trigger;
         const checker = client.getChecker(mainCheckRule);
+        if (typeof message.body !== "string") {
+          return false;
+        }
         return checker(message.body, mainText);
       } catch (error) {
         logger.error("Error while checking main text: ", error);
