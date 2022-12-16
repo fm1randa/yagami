@@ -113,7 +113,6 @@ export default class YagamiClient extends Client {
 
     this.on("message_create", async (message) => {
       handleAudioCommands(message);
-      console.log("message_create", message);
       const { handleSignups } = new ClientHelpers();
       if (this.handleSignups) {
         handleSignups(message, this);
