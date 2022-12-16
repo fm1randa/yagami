@@ -3,23 +3,28 @@ import { logger } from "../helpers";
 import GroupCollection from "../app/collections/Group";
 import { Message } from "whatsapp-web.js";
 import YagamiClient from "../YagamiClient";
+import globalStates from "../globalStates";
 
-class Groups {
-  async listGroups(message: Message) {
+export default class GroupActionSet {
+  private groupCollection: GroupCollection;
+  constructor() {
+    this.groupCollection = globalStates.groupCollection;
+  }
+  listGroups = async (message: Message) => {
     try {
-      const Groups: Group[] = await GroupCollection.getAll();
+      const Groups: Group[] = await this.groupCollection.getAll();
       const GroupsLineBreak =
         "🤖 Groups:\n\n" + Groups.map((group) => group.name).join("\n");
       message.reply(GroupsLineBreak);
     } catch (error) {
       logger.error("Error while listing groups: ", error);
     }
-  }
+  };
 
-  async addGroup(message: Message, client: YagamiClient) {
+  addGroup = async (message: Message, client: YagamiClient) => {
     try {
       const idSerialized = message.from;
-      const group = await GroupCollection.getById(idSerialized);
+      const group = await this.groupCollection.getById(idSerialized);
       if (group) return;
       const groupContact = await client.getContactById(idSerialized);
       if (!groupContact.isGroup) return;
@@ -27,25 +32,23 @@ class Groups {
         contactId: groupContact.id,
         name: groupContact.name,
       });
-      await GroupCollection.create(newGroup);
+      await this.groupCollection.create(newGroup);
     } catch (error) {
       const outputMessage = ((error: any) =>
         `Error while adding group: ${error}`)(error);
       logger.error(outputMessage);
     }
-  }
+  };
 
-  async removeGroup(message: Message) {
+  removeGroup = async (message: Message) => {
     const numberId = message.body.split(" ")[1];
     try {
-      const Group = await GroupCollection.getById(numberId);
+      const Group = await this.groupCollection.getById(numberId);
       if (!Group) return message.reply("This group is not registered.");
-      await GroupCollection.delete(numberId);
+      await this.groupCollection.delete(numberId);
       message.reply(`🤖 ${Group.name} is no longer registered!`);
     } catch (error) {
       logger.error("Error while removing group: ", error);
     }
-  }
+  };
 }
-
-export default new Groups();
