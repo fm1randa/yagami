@@ -1,11 +1,20 @@
 import { Mongoose } from "mongoose";
 import UserCollection from "./app/collections/User";
 import GroupCollection from "./app/collections/Group";
+import AudioCommandCollection from "./app/collections/AudioCommand";
 
 class GlobalStates {
   private _mongoose: Mongoose;
   private _groupCollection: GroupCollection;
   private _userCollection: UserCollection;
+  private _audioCollection: AudioCommandCollection;
+
+  public get audioCommandCollection(): AudioCommandCollection {
+    return this._audioCollection;
+  }
+  public set audioCommandCollection(value: AudioCommandCollection) {
+    this._audioCollection = value;
+  }
 
   public get userCollection(): UserCollection {
     return this._userCollection;

@@ -1,25 +1,23 @@
 import { Mongoose } from "mongoose";
 import { logger } from "../helpers";
-import { MongoStore } from "wwebjs-mongo";
-import mongooseState from "../globalStates";
+import globalStates from "../globalStates";
 import UserCollection from "./collections/User";
 import GroupCollection from "./collections/Group";
+import AudioCommandCollection from "./collections/AudioCommand";
 
 export async function connectToDatabase(mongoURI: string, mongoose: Mongoose) {
   try {
-    mongooseState.mongoose = mongoose;
+    globalStates.mongoose = mongoose;
     const userCollection = new UserCollection(mongoose);
     const groupCollection = new GroupCollection(mongoose);
-    mongooseState.userCollection = userCollection;
-    mongooseState.groupCollection = groupCollection;
+    const audioCommandCollection = new AudioCommandCollection(mongoose);
+    globalStates.userCollection = userCollection;
+    globalStates.groupCollection = groupCollection;
+    globalStates.audioCommandCollection = audioCommandCollection;
 
     logger.info("Connecting to MongoDB...");
     await mongoose.connect(mongoURI);
     logger.info("Connected to MongoDB");
-    const store = new MongoStore({ mongoose });
-    return {
-      store,
-    };
   } catch (error) {
     logger.error(`An error occurred while connecting to MongoDB: ${error}`);
   }

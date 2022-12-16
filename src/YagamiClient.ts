@@ -1,5 +1,11 @@
 import qrcode from "qrcode-terminal";
-import { Client, ClientOptions, LocalAuth, Message } from "whatsapp-web.js";
+import {
+  Client,
+  ClientOptions,
+  LocalAuth,
+  Message,
+  MessageMedia,
+} from "whatsapp-web.js";
 import path from "path";
 import Command, { CheckRule } from "./Command";
 import UserCollection from "./app/collections/User";
@@ -17,6 +23,7 @@ import {
 } from "./helpers";
 import os from "os";
 import getDefaultCommands from "./commands/defaultCommands";
+import handleAudioCommands from "./handleAudioCommands";
 
 export type CommandExecuted = {
   command: Command;
@@ -105,6 +112,8 @@ export default class YagamiClient extends Client {
     ); */
 
     this.on("message_create", async (message) => {
+      handleAudioCommands(message);
+      console.log("message_create", message);
       const { handleSignups } = new ClientHelpers();
       if (this.handleSignups) {
         handleSignups(message, this);
