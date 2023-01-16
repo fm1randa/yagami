@@ -76,6 +76,10 @@ export default class YagamiClient extends Client {
       qrcode.generate(qr, { small: true });
     });
 
+    this.on("loading_screen", (percent) => {
+      logger.info(`${this.clientId} client loading chats: ${percent}%`);
+    });
+
     this.on("authenticated", () => {
       logger.info(`${this.clientId} AUTHENTICATED`);
     });
