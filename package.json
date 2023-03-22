@@ -1,6 +1,6 @@
 {
   "name": "wwebjs-yagami",
-  "version": "1.4.0-alpha.1",
+  "version": "1.4.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "dotenv": "10.0.0",
     "mongoose": "6.7.2",
     "qrcode-terminal": "0.12.0",
-    "whatsapp-web.js": "1.19.2",
+    "whatsapp-web.js": "1.19.5",
     "winston": "3.8.2",
     "wwebjs-mongo": "1.1.0"
   },
