@@ -210,4 +210,31 @@ export default class ClientHelpers {
       throw new Error(error);
     }
   }
+
+  static async didMessageMentionMe(message: Message, client: YagamiClient) {
+    const mentions = await message.getMentions();
+    const me = client.info.wid;
+    if (!mentions || !mentions.length) return false;
+    if (!me) return false;
+    return mentions.some(
+      (mention) => mention.id._serialized === me._serialized
+    );
+  }
+
+  static async getThread(
+    message: Message,
+    limit: number = 10
+  ): Promise<Message[]> {
+    let thread: Message[] = [];
+    let currentMessage: Message = message;
+    for (let i = 0; i < limit; i++) {
+      const quotedMessage = await currentMessage.getQuotedMessage();
+      console.log({ quotedMessage });
+      if (!quotedMessage) break;
+      thread.push(quotedMessage);
+      currentMessage = quotedMessage;
+    }
+    console.log({ thread });
+    return thread;
+  }
 }
