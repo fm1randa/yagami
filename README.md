@@ -74,7 +74,6 @@ After running `npm start` or `npm run compile` (build + start), you'll see that 
 
 <img width="555" alt="image" src="https://user-images.githubusercontent.com/35941797/202930336-2c235b51-b8df-4e06-a2cd-09d94a5b7639.png">
 
-
 ## 👾 Clients
 
 It's possible to have many concurrent clients. In other words, you can manage more than one bot simultaneously with one Node instance.
@@ -141,8 +140,6 @@ A estrutura de dados das entidades `User` e `Group` do banco é representada nas
 ## 🎫 Session
 
 You can use any phone number with Yagami Client. To do so, it is used a session stored in the database, for avoiding scanning the QR Code every execution. It is done through the `whatsapp-web.js` auth strategy, **Remote Auth**.
-
-The [wwebjs-mongo](https://github.com/jtourisNS/wwebjs-mongo) library does the interface between `mongoose` and `whatsapp-web.js`.
 
 Each session is identified by the [environment variable](#environment-variables) `CLIENT_ID`. For each new ID, two collections are created in the Mongo database:
 
