@@ -229,12 +229,10 @@ export default class ClientHelpers {
     let currentMessage: Message = message;
     for (let i = 0; i < limit; i++) {
       const quotedMessage = await currentMessage.getQuotedMessage();
-      console.log({ quotedMessage });
       if (!quotedMessage) break;
       thread.push(quotedMessage);
       currentMessage = quotedMessage;
     }
-    console.log({ thread });
     return thread;
   }
 }
