@@ -4,19 +4,13 @@ import {
   ClientOptions,
   LocalAuth,
   Message,
-  MessageMedia,
 } from "whatsapp-web.js";
-import path from "path";
 import Command, { CheckRule } from "./Command";
-import UserCollection from "./app/collections/User";
-import GroupCollection from "./app/collections/Group";
 import {
-  copyDir,
   exactly,
   includes,
   msToTime,
   logger,
-  remove,
   startsWith,
   ClientHelpers,
   measureExecutionTime,
@@ -75,6 +69,10 @@ export default class YagamiClient extends Client {
       logger.info(`${this.clientId} client QR code:`);
       qrcode.generate(qr, { small: true });
     });
+
+    this.on("code", (code) => {
+      logger.info(`${this.clientId} client code to link with phone number: ${code}`);
+    })
 
     this.on("loading_screen", (percent) => {
       logger.info(`${this.clientId} client loading chats: ${percent}%`);

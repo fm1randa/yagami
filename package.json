@@ -1,14 +1,22 @@
 {
   "name": "wwebjs-yagami",
-  "version": "1.6.2",
+  "version": "1.7.0-0.1.0",
   "description": "",
   "repository": {
     "type": "git",
     "url": "https://github.com/fm1randa/yagami"
   },
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
   "build": "tsc",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./index.js",
+    "./wwebjs": "./wwebjs/index.js",
+    "./helpers": "./helpers/index.js"
+  },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "rm -rf ./dist && npx tsc -p tsconfig.json && echo ✅ wwebjs-yagami built successfully!",
     "dev": "nodemon --exec npm run build"
@@ -26,7 +34,7 @@
     "dotenv": "16.3.1",
     "mongoose": "7.4.1",
     "qrcode-terminal": "0.12.0",
-    "whatsapp-web.js": "1.21.0",
+    "whatsapp-web.js": "github:fm1randa/whatsapp-web.js",
     "winston": "3.10.0"
   },
   "nodemonConfig": {
