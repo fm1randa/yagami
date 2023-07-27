@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && npx tsc -p tsconfig.json && echo ✅ wwebjs-yagami built successfully!",
-    "dev": "nodemon --exec npm run build"
+    "dev": "nodemon --exec npm run build",
+    "pub": "yarn build && node ./scripts/frank-dist && yarn publish ./dist"
   },
   "keywords": [],
   "author": "",
