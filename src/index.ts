@@ -1,24 +1,23 @@
-import YagamiClient from "./YagamiClient";
+import YagamiClient, { type YagamiOptions } from './YagamiClient'
 import Command, {
-  CommandAction,
-  CheckRule,
-  BodyCheckProps,
-  CommandAttributes,
-  MessageProps,
-  TriggerType,
-} from "./Command";
-import { YagamiOptions } from "./YagamiClient";
-import { connectToDatabase } from "./app/database";
+  type CommandAction,
+  type CheckRule,
+  type BodyCheckProps,
+  type CommandAttributes,
+  type MessageProps,
+  type TriggerType
+} from './Command'
+import { connectToDatabase } from './app/database'
 
-export default YagamiClient;
+export default YagamiClient
 export {
   Command,
-  YagamiOptions,
-  CommandAction,
-  CheckRule,
-  BodyCheckProps,
-  CommandAttributes,
-  MessageProps,
-  TriggerType,
-  connectToDatabase,
-};
+  type YagamiOptions,
+  type CommandAction,
+  type CheckRule,
+  type BodyCheckProps,
+  type CommandAttributes,
+  type MessageProps,
+  type TriggerType,
+  connectToDatabase
+}

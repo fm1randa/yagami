@@ -72,7 +72,7 @@ export default class YagamiClient extends Client {
     })
 
     this.on('code', (code) => {
-      logger.info(`${this.clientId ?? 'Yagami'} client code to link with phone number: ${code}`);
+      logger.info(`${this.clientId ?? 'Yagami'} client code to link with phone number: ${code}`)
     })
 
     this.on('loading_screen', (percent) => {
