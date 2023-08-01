@@ -1,11 +1,12 @@
-import qrcode from "qrcode-terminal";
+import qrcode from 'qrcode-terminal'
 import {
   Client,
-  ClientOptions,
-  LocalAuth,
-  Message,
-} from "whatsapp-web.js";
-import Command, { CheckRule } from "./Command";
+  type ClientOptions,
+  type LocalAuth,
+  type Message
+} from 'whatsapp-web.js'
+import { type CheckRule } from './Command'
+import type Command from './Command'
 import {
   exactly,
   includes,
@@ -13,91 +14,93 @@ import {
   logger,
   startsWith,
   ClientHelpers,
-  measureExecutionTime,
-} from "./helpers";
-import os from "os";
-import getDefaultCommands from "./commands/defaultCommands";
-import handleAudioCommands from "./handleAudioCommands";
+  measureExecutionTime
+} from './helpers'
+import os from 'os'
+import getDefaultCommands from './commands/defaultCommands'
+import handleAudioCommands from './handleAudioCommands'
 
-export type CommandExecuted = {
-  command: Command;
-  timeElapsed: number;
-  executionDate: Date;
-};
+export interface CommandExecuted {
+  command: Command
+  timeElapsed: number
+  executionDate: Date
+}
 
 export interface YagamiOptions extends ClientOptions {
-  handleSignups?: boolean;
+  handleSignups?: boolean
 }
 
 export default class YagamiClient extends Client {
-  public commands: Command[];
-  public authStrategy: LocalAuth;
-  public clientId: string;
-  private handleSignups: boolean;
-  public startTime: Date;
-  public lastCommandsExecuted: CommandExecuted[];
-  public commandsExecuted: number;
-  constructor(commmands: Command[], options: YagamiOptions) {
-    super(options);
-    const defaultCommands = getDefaultCommands();
-    this.commands = [...defaultCommands, ...commmands];
-    this.authStrategy = options.authStrategy;
-    this.clientId = this.authStrategy.clientId;
-    this.handleSignups = options.handleSignups || false;
-    this.startTime = new Date();
-    this.lastCommandsExecuted = [];
-    this.commandsExecuted = 0;
+  public commands: Command[]
+  public authStrategy?: LocalAuth
+  public clientId?: string
+  private readonly handleSignups: boolean
+  public startTime: Date
+  public lastCommandsExecuted: CommandExecuted[]
+  public commandsExecuted: number
+  constructor (commmands: Command[], options: YagamiOptions) {
+    super(options)
+    const defaultCommands = getDefaultCommands()
+    this.commands = [...defaultCommands, ...commmands]
+    this.authStrategy = options.authStrategy
+    this.clientId = this.authStrategy?.clientId
+    this.handleSignups = (options.handleSignups === true) || false
+    this.startTime = new Date()
+    this.lastCommandsExecuted = []
+    this.commandsExecuted = 0
   }
 
-  get uptime() {
-    return new Date().getTime() - this.startTime.getTime();
+  get uptime () {
+    return new Date().getTime() - this.startTime.getTime()
   }
 
-  get executionTimeAvg() {
+  get executionTimeAvg () {
     return (
       this.lastCommandsExecuted.reduce(
         (acc, curr) => acc + curr.timeElapsed,
         0
       ) / this.lastCommandsExecuted.length
-    );
+    )
   }
 
-  init() {
-    logger.info(`${this.clientId} client is initializing...`);
+  init () {
+    logger.info(`${this.clientId ?? 'Yagami'} is initializing...`)
 
-    this.on("qr", (qr) => {
-      logger.info(`${this.clientId} client QR code:`);
-      qrcode.generate(qr, { small: true });
-    });
-
-    this.on("code", (code) => {
-      logger.info(`${this.clientId} client code to link with phone number: ${code}`);
+    this.on('qr', (qr) => {
+      logger.info(`${this.clientId ?? 'Yagami'} QR code:`)
+      qrcode.generate(qr, { small: true })
     })
 
-    this.on("loading_screen", (percent) => {
-      logger.info(`${this.clientId} client loading chats: ${percent}%`);
-    });
+    this.on('code', (code) => {
+      logger.info(`${this.clientId ?? 'Yagami'} client code to link with phone number: ${code}`)
+    })
 
-    this.on("authenticated", () => {
-      logger.info(`${this.clientId} AUTHENTICATED`);
-    });
+    this.on('loading_screen', (percent) => {
+      logger.info(`${this.clientId ?? 'Yagami'} is loading chats: ${percent}%`)
+    })
 
-    this.on("auth_failure", (msg) => {
-      logger.error(`${this.clientId} AUTHENTICATION FAILURE`, msg);
-    });
+    this.on('authenticated', () => {
+      logger.info(`${this.clientId ?? 'Yagami'} authenticated 🌐`)
+    })
 
-    this.on("disconnected", () => {
-      logger.warn(`${this.clientId} DISCONNECTED, RECONNECTING...`);
-      this.initialize();
-    });
+    this.on('auth_failure', (msg) => {
+      logger.error(`${this.clientId ?? 'Yagami'} failed to authenticate.`, msg)
+    })
 
-    this.on("ready", async () => {
-      logger.info(
-        `${
-          this.clientId
-        } client is ready! Version: ${await this.getWWebVersion()}`
-      );
-    });
+    this.on('disconnected', () => {
+      logger.warn(`${this.clientId ?? 'Yagami'} disconnected, reconnecting...`)
+      this.initialize()
+    })
+
+    this.on('ready', () => {
+      this.getWWebVersion().then(version => {
+        logger.info(
+          `${
+            this.clientId ?? 'Yagami'
+          } is ready ✅ Version: ${version}`
+        )
+      })
+    })
     /* this.on(
       "command_executed",
       async (commandExecuted: CommandExecuted, message: Message) => {
@@ -113,128 +116,129 @@ export default class YagamiClient extends Client {
       }
     ); */
 
-    this.on("message_create", async (message) => {
-      handleAudioCommands(message);
-      const { handleSignups } = new ClientHelpers();
+    this.on('message_create', (message) => {
+      handleAudioCommands(message)
+      const { handleSignups } = new ClientHelpers()
       if (this.handleSignups) {
-        handleSignups(message, this);
+        handleSignups(message, this)
       }
       if (ClientHelpers.isUselessMessage(message)) {
-        return;
+        return
       }
-      this.executeCommands(message);
-    });
+      this.executeCommands(message)
+    })
 
-    this.on("message_reaction", async (reaction) => {
-      if (reaction.reaction !== "❌") return;
+    this.on('message_reaction', (reaction) => {
+      if (reaction.reaction !== '❌') return
       try {
-        const reactionMessage = await ClientHelpers.getReactionMessage(
+        ClientHelpers.getReactionMessage(
           reaction,
           this
-        );
-        reactionMessage.delete(true);
+        ).then(reactionMessage => {
+          reactionMessage.delete(true)
+        })
       } catch (error) {
         logger.debug(
           'Error while trying to delete message with reaction "❌".',
           error
-        );
+        )
       }
-    });
+    })
 
-    this.initialize();
+    this.initialize()
   }
 
-  close() {
-    this.startTime = new Date();
-    this.lastCommandsExecuted = [];
-    this.commandsExecuted = 0;
-    this.destroy();
+  close () {
+    this.startTime = new Date()
+    this.lastCommandsExecuted = []
+    this.commandsExecuted = 0
+    this.destroy()
   }
 
-  async executeCommands(message: Message) {
+  async executeCommands (message: Message) {
     this.commands.forEach((command) => {
-      this.executeCommand(message, command);
-    });
+      this.executeCommand(message, command)
+    })
   }
 
-  async executeCommand(message: Message, command: Command) {
-    const clientHelpers = new ClientHelpers();
-    const { action, trigger, restricted } = command.attributes;
+  async executeCommand (message: Message, command: Command) {
+    const clientHelpers = new ClientHelpers()
+    const { action, trigger, restricted } = command.attributes
     const messageMatchesTrigger: boolean = await ClientHelpers.matches({
       client: this,
       message,
-      trigger,
-    });
+      trigger
+    })
     if (!messageMatchesTrigger) {
-      return;
+      return
     }
     const { userHasPermission } = await clientHelpers.checkPermissions({
       client: this,
       message,
-      restricted,
-    });
+      restricted
+    })
     if (!userHasPermission) {
-      return;
+      return
     }
 
     const { count, finalExecutionDate } = await measureExecutionTime(
       async () => {
         const logReactError = (error: Error) =>
-          logger.debug("Error while reacting to message.", error);
-        await message.react("🔄").catch(logReactError);
-        await action(message, this);
-        message.react("✅").catch(logReactError);
+          logger.debug('Error while reacting to message.', error)
+        await message.react('🔄').catch(logReactError)
+        await action(message, this)
+        message.react('✅').catch(logReactError)
       }
-    );
+    )
     const commandExecuted: CommandExecuted = {
       command,
       timeElapsed: count,
-      executionDate: finalExecutionDate,
-    };
+      executionDate: finalExecutionDate
+    }
     if (command.attributes.countAsCommandExecuted) {
-      this.updateCommandsExecuted(commandExecuted);
+      this.updateCommandsExecuted(commandExecuted)
     }
-    this.emit("command_executed", commandExecuted, message);
-    return Promise.resolve();
+    this.emit('command_executed', commandExecuted, message)
+    await Promise.resolve()
   }
 
-  getChecker(checkRule: CheckRule): Function {
+  getChecker (checkRule: CheckRule) {
     switch (checkRule) {
-      case "exactly":
-        return exactly;
-      case "startsWith":
-        return startsWith;
-      case "includes":
-        return includes;
+      case 'exactly':
+        return exactly
+      case 'startsWith':
+        return startsWith
+      case 'includes':
+        return includes
     }
   }
 
-  private updateCommandsExecuted(commandExecuted: CommandExecuted) {
-    this.commandsExecuted++;
-    this.lastCommandsExecuted.push(commandExecuted);
+  private updateCommandsExecuted (commandExecuted: CommandExecuted) {
+    this.commandsExecuted++
+    this.lastCommandsExecuted.push(commandExecuted)
     if (this.lastCommandsExecuted.length > 10) {
-      this.lastCommandsExecuted.shift();
+      this.lastCommandsExecuted.shift()
     }
   }
 
-  private logCommandExecuted(commandExecuted: CommandExecuted) {
-    const commandTrigger = commandExecuted.command.attributes.trigger.mainText;
-    const timeElapsed = msToTime(commandExecuted.timeElapsed);
-    const executionTimeAvg = msToTime(this.executionTimeAvg);
+  private logCommandExecuted (commandExecuted: CommandExecuted) {
+    const commandTrigger = commandExecuted.command.attributes.trigger.mainText
+    const timeElapsed = msToTime(commandExecuted.timeElapsed)
+    const executionTimeAvg = msToTime(this.executionTimeAvg)
     const commandRate = (
       this.commandsExecuted /
       100 /
       (this.uptime / 1000 / 60 / 60)
-    ).toFixed(1);
-    const freeMem = os.freemem() / 1024 / 1024 / 1024;
-    const commandExecutedString = `\nCommand ${commandTrigger} executed!\n`;
-    const timeElapsedString = `Time elapsed: ${timeElapsed}\n`;
-    const avgL10String = `AvgL10: ${executionTimeAvg}\n`;
-    const commandsExecutedString = `Commands executed: ${this.commandsExecuted}\n`;
-    const uptimeString = `Uptime: ${msToTime(this.uptime)}\n`;
-    const commandRateString = `Command rate: ${commandRate}\n`;
-    const freeMemString = `Free mem: ${freeMem.toFixed(1)} GB\n`;
-    const divider = `------------------------------------------------------`;
+    ).toFixed(1)
+    const freeMem = os.freemem() / 1024 / 1024 / 1024
+    const commandExecutedString = `\nCommand ${commandTrigger} executed!\n`
+    const timeElapsedString = `Time elapsed: ${timeElapsed}\n`
+    const avgL10String = `AvgL10: ${executionTimeAvg}\n`
+    const commandsExecutedString = `Commands executed: ${this.commandsExecuted}\n`
+    const uptimeString = `Uptime: ${msToTime(this.uptime)}\n`
+    const commandRateString = `Command rate: ${commandRate}\n`
+    const freeMemString = `Free mem: ${freeMem.toFixed(1)} GB\n`
+    const divider = '------------------------------------------------------'
     const output =
       commandExecutedString +
       timeElapsedString +
@@ -243,7 +247,7 @@ export default class YagamiClient extends Client {
       uptimeString +
       commandRateString +
       freeMemString +
-      divider;
-    logger.info(output);
+      divider
+    logger.info(output)
   }
 }

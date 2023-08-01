@@ -1,20 +1,22 @@
-import fs from "fs";
-import { logger } from ".";
+import fs from 'fs'
+import { logger } from '.'
 
-function remove(
+function remove (
   filePath: string,
   callback?: (err: NodeJS.ErrnoException) => void
 ) {
   const options = {
     recursive: true,
-    force: true,
-  };
+    force: true
+  }
   fs.rm(filePath, options, (error) => {
-    if (callback) callback(error);
-    if (error)
-      return logger.error(`Error while deleting file (${filePath}): ${error}`);
-    logger.info(`File or folder deleted successfully! (${filePath})`);
-  });
+    if (error === null) {
+      return
+    }
+    if (callback != null) callback(error)
+    if (error != null) { return logger.error(`Error while deleting file (${filePath}):`, error) }
+    logger.info(`File or folder deleted successfully! (${filePath})`)
+  })
 }
 
-export default remove;
+export default remove

@@ -1,6 +1,6 @@
 {
   "name": "wwebjs-yagami",
-  "version": "1.7.0-0.1.0",
+  "version": "1.7.0-0.1.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -20,7 +20,9 @@
   "scripts": {
     "build": "rm -rf ./dist && npx tsc -p tsconfig.json && echo ✅ wwebjs-yagami built successfully!",
     "dev": "nodemon --exec npm run build",
-    "pub": "yarn build && node ./scripts/frank-dist && yarn publish ./dist"
+    "pub": "yarn build && node ./scripts/frank-dist && yarn publish ./dist",
+    "lint": "npx eslint ./src/**/*.ts",
+    "lint:fix": "npx eslint ./src/**/*.ts --fix"
   },
   "keywords": [],
   "author": "",
@@ -28,8 +30,14 @@
   "devDependencies": {
     "@types/node": "^20.2.3",
     "@types/qrcode-terminal": "^0.12.0",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "eslint": "^8.0.1",
+    "eslint-config-standard-with-typescript": "^37.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
+    "eslint-plugin-promise": "^6.0.0",
     "nodemon": "^2.0.20",
-    "typescript": "^5.0.4"
+    "typescript": "*"
   },
   "dependencies": {
     "dotenv": "16.3.1",

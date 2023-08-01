@@ -3,8 +3,8 @@
  * @param value Message to be body checked
  * @param expected String to be looked for in the message
  */
-function exactly(value: string, expected: string) {
-	return value.trim() === expected;
+function exactly (value: string, expected: string) {
+  return value.trim() === expected
 }
 
-export default exactly;
+export default exactly
