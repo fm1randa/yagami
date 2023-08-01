@@ -6,7 +6,7 @@ export interface AwaitAnswerOptionsType {
 }
 
 interface ValidateMessagesArgs {
-  options: AwaitAnswerOptionsType
+  options?: AwaitAnswerOptionsType
   afterMessage: Message
   watchMessage: Message
 }
@@ -17,29 +17,31 @@ async function awaitAnswer (
   options?: AwaitAnswerOptionsType
 ) {
   return await new Promise<Message>((resolve, reject) => {
-    const listener = async (afterMessage: Message) => {
+    const listener = (afterMessage: Message) => {
       try {
-        const fromSameChat = await isFromSameChat(afterMessage, watchMessage)
-        if (!fromSameChat) {
-          return
-        }
-        if (
-          !options?.fromAnyUserInChat &&
-          !isFromSameUser(afterMessage, watchMessage)
-        ) {
-          return
-        }
-        const isValid = await validateMessages({
-          options,
-          afterMessage,
-          watchMessage
-        })
-        if (!isValid) {
-          reject("Message wasn't answered. Command cancelled")
-        }
-        resolve(afterMessage)
+        isFromSameChat(afterMessage, watchMessage).then((fromSameChat) => {
+          if (!fromSameChat) {
+            return
+          }
+          if (
+            (options?.fromAnyUserInChat === false || options?.fromAnyUserInChat === undefined) &&
+            !isFromSameUser(afterMessage, watchMessage)
+          ) {
+            return
+          }
+          validateMessages({
+            options,
+            afterMessage,
+            watchMessage
+          }).then((isValid) => {
+            if (!isValid) {
+              reject(new Error("Message wasn't answered. Command cancelled"))
+            }
+            resolve(afterMessage)
 
-        client.removeListener('message_create', listener)
+            client.removeListener('message_create', listener)
+          })
+        })
       } catch (error) {
         reject(error)
       }
@@ -50,7 +52,7 @@ async function awaitAnswer (
 async function validateMessages (args: ValidateMessagesArgs) {
   const { options, afterMessage, watchMessage } = args
 
-  if (!options?.requireQuote) {
+  if (options?.requireQuote === undefined || !(options?.requireQuote)) {
     return true
   }
 

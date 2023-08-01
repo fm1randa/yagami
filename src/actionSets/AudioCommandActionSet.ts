@@ -42,7 +42,7 @@ export default class AudioCommandActionSet {
     const media = await quotedMessage.downloadMedia()
     if (!media.mimetype.includes('audio')) { return await message.reply('Marque um áudio!') }
 
-    if (!trigger) {
+    if (trigger === '') {
       return await message.reply(
         '🤖 Por favor, informe o trigger! Exemplo: *!batatafrita*\n\n_Tem que começar com exclamação._'
       )
@@ -62,14 +62,14 @@ export default class AudioCommandActionSet {
 
   removeAudioCommand = async (message: Message) => {
     const trigger = message.body.split(' ')[1]
-    if (!trigger) {
+    if (trigger === '') {
       return await message.reply(
         '🤖 Por favor, informe o comando!\n\nDigite !ajuda !rmaudio para mais informações.'
       )
     }
     try {
       const find = await this.audioCommandCollection.get(trigger)
-      if (find) {
+      if (find !== undefined) {
         this.audioCommandCollection.delete(trigger)
         message.reply(`🤖 Comando ${trigger} removido com sucesso!`)
       } else {

@@ -36,13 +36,10 @@ async function chooseContact (
 function searchContacts (contacts: Contact[], search: string) {
   return contacts.filter(
     (contact) =>
-      (contact.name &&
-        contact.name.toLowerCase().includes(search.toLowerCase())) ||
-      (contact.number &&
-        contact.number.toLowerCase().includes(search.toLowerCase()))
+      (contact.name?.toLowerCase()?.includes(search.toLowerCase()) ?? false) ||
+      (contact.number?.toLowerCase()?.includes(search.toLowerCase()) ?? false)
   )
 }
-
 function createContactList (contacts: Contact[]) {
   return contacts
     .map((contact, index) => `${index + 1}: ${describeContact(contact)}`)

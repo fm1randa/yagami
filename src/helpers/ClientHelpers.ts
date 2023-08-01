@@ -1,7 +1,5 @@
 import type YagamiClient from '../YagamiClient'
 import { type Message, type Reaction } from 'whatsapp-web.js'
-import groupActionSet from '../actionSets/GroupActionSet'
-import userActionSet from '../actionSets/UserActionSet'
 import type User from '../app/models/User'
 import type UserCollection from '../app/collections/User'
 import type GroupCollection from '../app/collections/Group'
@@ -42,11 +40,11 @@ export default class ClientHelpers {
   async cleanupGroup (message: Message, client: YagamiClient) {
     const contact = await client.getContactById(message.from)
     const chat = await contact.getChat()
-    if (!chat || !chat.isGroup) return
+    if (!chat?.isGroup) return
     const group = await this.groupCollection.getById(chat.id._serialized)
-    if (!group) return
+    if (group === null) return
     if (
-      !group.lastCleanup ||
+      group.lastCleanup === null ||
       getMsUntilNow(group.lastCleanup) > 6 * 60 * 60 * 1000
     ) {
       chat.clearMessages()
@@ -90,7 +88,10 @@ export default class ClientHelpers {
       const props = Object.keys(messageProps)
       return props.every((prop) => {
         if (prop === 'body') {
-          const { checkRule, text } = messageProps[prop]
+          const bodyCheckProps = messageProps[prop]
+          if (bodyCheckProps === undefined) return true
+
+          const { checkRule, text } = bodyCheckProps
           const checker = client.getChecker(checkRule)
           if (typeof message.body !== 'string') {
             return false
@@ -101,8 +102,11 @@ export default class ClientHelpers {
           return checker(message.body, text)
         }
         if (prop === 'type') {
-          if (Array.isArray(messageProps[prop])) {
-            return messageProps[prop].includes(message.type)
+          const messageTypes = messageProps[prop]
+          if (messageTypes === undefined) return true
+
+          if (Array.isArray(messageTypes)) {
+            return messageTypes.includes(message.type)
           }
           return messageProps[prop] === message.type
         }
@@ -123,19 +127,20 @@ export default class ClientHelpers {
         return checker(message.body, mainText)
       } catch (error) {
         logger.error('Error while checking main text: ', error)
+        return false
       }
     }
 
     const chat = await message.getChat()
     const fromGroup = chat.isGroup
     const matchArray: boolean[] = []
-    if (trigger.inAnyChat) {
+    if (trigger.inAnyChat != null) {
       matchArray.push(match(trigger.inAnyChat))
     }
-    if (trigger.inGroup && fromGroup) {
+    if ((trigger.inGroup != null) && fromGroup) {
       matchArray.push(match(trigger.inGroup))
     }
-    if (trigger.inPrivateChat && !fromGroup) {
+    if ((trigger.inPrivateChat != null) && !fromGroup) {
       matchArray.push(match(trigger.inPrivateChat))
     }
     matchArray.push(checkMainText())
@@ -143,7 +148,7 @@ export default class ClientHelpers {
   }
 
   static async isAdmin (user: User) {
-    return user && user.isAdmin
+    return user?.isAdmin
   }
 
   async getUserFromMessage (message: Message) {
@@ -204,7 +209,7 @@ export default class ClientHelpers {
       const message = recentMessages.find(
         (msg) => msg.id.id === reaction.msgId.id
       )
-      if (!message) {
+      if (message == null) {
         throw new Error('Message not found')
       }
       return message
@@ -216,8 +221,8 @@ export default class ClientHelpers {
   static async didMessageMentionMe (message: Message, client: YagamiClient) {
     const mentions = await message.getMentions()
     const me = client.info.wid
-    if (!mentions || (mentions.length === 0)) return false
-    if (!me) return false
+    if (mentions === undefined || (mentions.length === 0)) return false
+    if (me === undefined) return false
     return mentions.some(
       (mention) => mention.id._serialized === me._serialized
     )
@@ -231,7 +236,7 @@ export default class ClientHelpers {
     let currentMessage: Message = message
     for (let i = 0; i < limit; i++) {
       const quotedMessage = await currentMessage.getQuotedMessage()
-      if (!quotedMessage) break
+      if (quotedMessage === undefined) break
       thread.push(quotedMessage)
       currentMessage = quotedMessage
     }

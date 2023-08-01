@@ -19,6 +19,6 @@ export async function connectToDatabase (mongoURI: string, mongoose: Mongoose) {
     await mongoose.connect(mongoURI)
     logger.info('Connected to MongoDB')
   } catch (error) {
-    logger.error(`An error occurred while connecting to MongoDB: ${error}`)
+    logger.error('An error occurred while connecting to MongoDB:', error)
   }
 }

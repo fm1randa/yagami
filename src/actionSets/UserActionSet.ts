@@ -26,7 +26,7 @@ export default class UserActionSet {
       const contact = await message.getContact()
       if (contact.isGroup) return
       const user = await this.userCollection.getById(contact.id._serialized)
-      if (user) return
+      if (user !== undefined) return
       const newUser = new User({
         contactId: contact.id,
         name: contact.name ?? contact.pushname,
@@ -34,9 +34,9 @@ export default class UserActionSet {
       })
       await this.userCollection.create(newUser)
     } catch (error) {
-      const outputMessage = ((error: any) =>
-        `Error while adding user: ${error}`)(error)
-      logger.error(outputMessage)
+      if (error instanceof Error) {
+        logger.error(error.message)
+      }
     }
   }
 
@@ -44,7 +44,7 @@ export default class UserActionSet {
     const numberId = message.body.split(' ')[1]
     try {
       const user = await this.userCollection.getById(numberId)
-      if (!user) return await message.reply('This user is not registered.')
+      if (user === null) return await message.reply('This user is not registered.')
       await this.userCollection.delete(numberId)
       message.reply(`🤖 ${user.name} is no longer registered!`)
     } catch (error) {

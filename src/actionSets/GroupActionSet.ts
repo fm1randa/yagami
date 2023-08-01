@@ -26,18 +26,18 @@ export default class GroupActionSet {
     try {
       const idSerialized = message.from
       const group = await this.groupCollection.getById(idSerialized)
-      if (group) return
+      if (group != null) return
       const groupContact = await client.getContactById(idSerialized)
       if (!groupContact.isGroup) return
       const newGroup = new Group({
         contactId: groupContact.id,
-        name: groupContact.name
+        name: groupContact.name ?? groupContact.pushname
       })
       await this.groupCollection.create(newGroup)
     } catch (error) {
-      const outputMessage = ((error: any) =>
-        `Error while adding group: ${error}`)(error)
-      logger.error(outputMessage)
+      if (error instanceof Error) {
+        logger.error(error.message)
+      }
     }
   }
 
@@ -45,7 +45,7 @@ export default class GroupActionSet {
     const numberId = message.body.split(' ')[1]
     try {
       const Group = await this.groupCollection.getById(numberId)
-      if (!Group) return await message.reply('This group is not registered.')
+      if (Group == null) return await message.reply('This group is not registered.')
       await this.groupCollection.delete(numberId)
       message.reply(`🤖 ${Group.name} is no longer registered!`)
     } catch (error) {

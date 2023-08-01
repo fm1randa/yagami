@@ -1,5 +1,5 @@
 function fixTimezone (date: Date, options?: { add: boolean }) {
-  const isServer = process.env.SERVER
+  const isServer = process.env.SERVER === 'true'
   const now = new Date()
   const timezoneInMinutes = now.getTimezoneOffset()
   const timezoneInHours = timezoneInMinutes / 60
@@ -9,7 +9,7 @@ function fixTimezone (date: Date, options?: { add: boolean }) {
   if (!isServer) {
     return
   }
-  if (options?.add) {
+  if (options?.add === true) {
     date.setTime(date.getTime() + timezoneBrazilInMS)
   } else {
     date.setTime(date.getTime() - timezoneBrazilInMS)

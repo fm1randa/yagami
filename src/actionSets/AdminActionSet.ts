@@ -27,19 +27,19 @@ export default class AdminActionSet {
         fromAnyUserInChat: true
       })
       const admin = await this.userCollection.getById(contact.id._serialized)
-      if (!admin) {
+      if (admin === null) {
         return await message.reply(
           "That contact isn't registered. This person must send a message to the bot first."
         )
       }
-      if (admin && admin.isAdmin) { return await message.reply('This contact is already an admin.') }
+      if (admin?.isAdmin) { return await message.reply('This contact is already an admin.') }
       await this.userCollection.addAdmin(contact.id._serialized)
       return await message.reply(`🤖 ${admin.name} is now a bot admin!`)
     } catch (error) {
-      const outputMessage = ((error: any) =>
-        `Error while adding admin: ${error}`)(error)
-      message.reply(outputMessage)
-      logger.error(outputMessage)
+      if (error instanceof Error) {
+        message.reply(error.message)
+        logger.error(error.message)
+      }
     }
   }
 
@@ -53,7 +53,7 @@ export default class AdminActionSet {
       const admin = admins.find(
         (admin) => admin.contactId._serialized === contact.id._serialized
       )
-      if (!admin || !admin.isAdmin) { return await message.reply('This contact is not an admin.') }
+      if ((admin == null) || !admin.isAdmin) { return await message.reply('This contact is not an admin.') }
       await this.userCollection.removeAdmin(contact.id._serialized)
       return await message.reply(`🤖 ${admin.name} is no longer an bot admin!`)
     } catch (error) {

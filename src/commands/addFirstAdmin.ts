@@ -10,7 +10,7 @@ async function addFirstAdmin (message: Message) {
     if (admins.length > 0) { return await message.reply('There is already an admin registered.') }
     const contact = await message.getContact()
     const user = await userCollection.getById(contact.id._serialized)
-    if (!user) {
+    if (user === undefined) {
       return await message.reply(
         'You were not register as a user yet. Please, try again.'
       )
@@ -18,10 +18,10 @@ async function addFirstAdmin (message: Message) {
     await userCollection.addAdmin(contact.id._serialized)
     return await message.reply(`🤖 ${user.name} is now a bot admin!`)
   } catch (error) {
-    const outputMessage = ((error: any) =>
-      `Error while adding admin: ${error}`)(error)
-    message.reply(outputMessage)
-    logger.error(outputMessage)
+    if (error instanceof Error) {
+      message.reply(error.message)
+      logger.error(error.message, error)
+    }
   }
 }
 

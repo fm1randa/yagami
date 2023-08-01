@@ -1,7 +1,14 @@
 import { createLogger, format, transports } from 'winston'
 const { timestamp, errors, splat, json, printf, combine, colorize } = format
 
-const myFormat = printf(({ level, timestamp, message, ...rest }) => {
+interface PrintfOptions {
+  level: string
+  timestamp: string
+  message: string
+  [key: string]: string
+}
+
+const myFormat = printf(({ level, timestamp, message, ...rest }: PrintfOptions) => {
   return `[${timestamp}] ${level}: ${message}\n${
         (Object.keys(rest).length > 0) ? JSON.stringify(rest, null, 2) : ''
     }`
