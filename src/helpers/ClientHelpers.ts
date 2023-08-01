@@ -25,8 +25,8 @@ interface MessageBodyObject {
 type MessageBody = string | MessageBodyObject
 
 export default class ClientHelpers {
-  private readonly userCollection: UserCollection
-  private readonly groupCollection: GroupCollection
+  private readonly userCollection?: UserCollection
+  private readonly groupCollection?: GroupCollection
   private readonly userActionSet: UserActionSet
   private readonly groupActionSet: GroupActionSet
   constructor () {
@@ -41,6 +41,10 @@ export default class ClientHelpers {
     const contact = await client.getContactById(message.from)
     const chat = await contact.getChat()
     if (!chat?.isGroup) return
+    if (this.groupCollection === undefined) {
+      logger.warn('Attempted to cleanup group but groupCollection is undefined')
+      return
+    }
     const group = await this.groupCollection.getById(chat.id._serialized)
     if (group === null) return
     if (
@@ -153,6 +157,10 @@ export default class ClientHelpers {
 
   async getUserFromMessage (message: Message) {
     const contact = await message.getContact()
+    if (this.userCollection === undefined) {
+      logger.warn('Attempted to get user from message but userCollection is undefined')
+      return null
+    }
     return await this.userCollection.getById(contact.id._serialized)
   }
 

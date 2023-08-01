@@ -4,12 +4,12 @@ import type GroupCollection from './app/collections/Group'
 import type AudioCommandCollection from './app/collections/AudioCommand'
 
 class GlobalStates {
-  private _mongoose: Mongoose
-  private _groupCollection: GroupCollection
-  private _userCollection: UserCollection
-  private _audioCollection: AudioCommandCollection
+  private _mongoose?: Mongoose
+  private _groupCollection?: GroupCollection
+  private _userCollection?: UserCollection
+  private _audioCollection?: AudioCommandCollection
 
-  public get audioCommandCollection (): AudioCommandCollection {
+  public get audioCommandCollection (): AudioCommandCollection | undefined {
     return this._audioCollection
   }
 
@@ -17,7 +17,7 @@ class GlobalStates {
     this._audioCollection = value
   }
 
-  public get userCollection (): UserCollection {
+  public get userCollection (): UserCollection | undefined {
     return this._userCollection
   }
 
@@ -25,7 +25,7 @@ class GlobalStates {
     this._userCollection = value
   }
 
-  public get groupCollection (): GroupCollection {
+  public get groupCollection (): GroupCollection | undefined {
     return this._groupCollection
   }
 
@@ -33,7 +33,7 @@ class GlobalStates {
     this._groupCollection = value
   }
 
-  public get mongoose (): Mongoose {
+  public get mongoose (): Mongoose | undefined {
     return this._mongoose
   }
 
