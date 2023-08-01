@@ -158,6 +158,9 @@ export default class ClientHelpers {
 
   async hasUserPermission (message: Message, restricted: boolean) {
     const user = await this.getUserFromMessage(message)
+    if (user === null) {
+      return false
+    }
     const fromAdmin = await ClientHelpers.isAdmin(user)
     if (restricted && !fromAdmin) {
       return false

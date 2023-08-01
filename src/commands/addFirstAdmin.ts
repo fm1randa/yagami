@@ -10,7 +10,7 @@ async function addFirstAdmin (message: Message) {
     if (admins.length > 0) { return await message.reply('There is already an admin registered.') }
     const contact = await message.getContact()
     const user = await userCollection.getById(contact.id._serialized)
-    if (user === undefined) {
+    if (user === null) {
       return await message.reply(
         'You were not register as a user yet. Please, try again.'
       )

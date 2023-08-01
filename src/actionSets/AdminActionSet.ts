@@ -1,8 +1,9 @@
 import type User from '../app/models/User'
 import type UserCollection from '../app/collections/User'
-import { type Client, type Message } from 'whatsapp-web.js'
+import { type Message } from 'whatsapp-web.js'
 import { chooseContact, logger } from '../helpers'
 import globalStates from '../globalStates'
+import type YagamiClient from '../YagamiClient'
 
 export default class AdminActionSet {
   private readonly userCollection: UserCollection
@@ -21,7 +22,7 @@ export default class AdminActionSet {
     }
   }
 
-  addAdmin = async (message: Message, client: Client) => {
+  addAdmin = async (message: Message, client: YagamiClient) => {
     try {
       const { contact } = await chooseContact(client, message, {
         fromAnyUserInChat: true
@@ -43,7 +44,7 @@ export default class AdminActionSet {
     }
   }
 
-  removeAdmin = async (message: Message, client: Client) => {
+  removeAdmin = async (message: Message, client: YagamiClient) => {
     try {
       const admins: User[] = await this.userCollection.getAdmins()
       if (admins.length === 0) { return await message.reply('There are no admins registered yet.') }
