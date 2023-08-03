@@ -1,6 +1,6 @@
 {
   "name": "wwebjs-yagami",
-  "version": "1.7.0-0.1.1",
+  "version": "1.7.0-0.2.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
   "scripts": {
     "build": "rm -rf ./dist && npx tsc -p tsconfig.json && echo ✅ wwebjs-yagami built successfully!",
     "dev": "nodemon --exec npm run build",
-    "pub": "yarn build && node ./scripts/frank-dist && yarn publish ./dist",
+    "pub": "npm run build && node ./scripts/frank-dist && yarn publish ./dist",
     "lint": "npx eslint ./src/**/*.ts",
     "lint:fix": "npx eslint ./src/**/*.ts --fix"
   },

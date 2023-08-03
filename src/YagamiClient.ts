@@ -118,9 +118,9 @@ export default class YagamiClient extends Client {
 
     this.on('message_create', (message) => {
       handleAudioCommands(message)
-      const { handleSignups } = new ClientHelpers()
+      const { handleSignups } = new ClientHelpers(this)
       if (this.handleSignups) {
-        handleSignups(message, this)
+        handleSignups(message)
       }
       if (ClientHelpers.isUselessMessage(message)) {
         return
@@ -131,9 +131,9 @@ export default class YagamiClient extends Client {
     this.on('message_reaction', (reaction) => {
       if (reaction.reaction !== '❌') return
       try {
-        ClientHelpers.getReactionMessage(
-          reaction,
-          this
+        const { getReactionMessage } = new ClientHelpers(this)
+        getReactionMessage(
+          reaction
         ).then(reactionMessage => {
           reactionMessage.delete(true)
         })
@@ -162,9 +162,9 @@ export default class YagamiClient extends Client {
   }
 
   async executeCommand (message: Message, command: Command) {
-    const clientHelpers = new ClientHelpers()
+    const { matches, checkPermissions } = ClientHelpers
     const { action, trigger, restricted } = command.attributes
-    const messageMatchesTrigger: boolean = await ClientHelpers.matches({
+    const messageMatchesTrigger: boolean = await matches({
       client: this,
       message,
       trigger
@@ -172,8 +172,7 @@ export default class YagamiClient extends Client {
     if (!messageMatchesTrigger) {
       return
     }
-    const { userHasPermission } = await clientHelpers.checkPermissions({
-      client: this,
+    const { userHasPermission } = await checkPermissions({
       message,
       restricted
     })

@@ -5,6 +5,11 @@ import globalStates from '../globalStates'
 
 async function addFirstAdmin (message: Message) {
   const { userCollection } = globalStates
+  if (userCollection === undefined) {
+    logger.warn('Attempted to add first admin but userCollection is undefined')
+    message.reply('Could not add first admin.')
+    return
+  }
   try {
     const admins = await userCollection.getAdmins()
     if (admins.length > 0) { return await message.reply('There is already an admin registered.') }
