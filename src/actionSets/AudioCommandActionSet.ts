@@ -1,4 +1,3 @@
-import type AudioCommandCollection from '../app/collections/AudioCommand'
 import globalStates from '../globalStates'
 import { type Message } from 'whatsapp-web.js'
 import type WAWebJS from 'whatsapp-web.js'
@@ -10,14 +9,15 @@ export interface AudioCommandType {
 }
 
 export default class AudioCommandActionSet {
-  private readonly audioCommandCollection: AudioCommandCollection
-  constructor () {
-    this.audioCommandCollection = globalStates.audioCommandCollection
-  }
-
   listAudioCommands = async (message: Message) => {
+    const { audioCommandCollection } = globalStates
+    if (audioCommandCollection === undefined) {
+      logger.warn('Attempted to list audio commands but audioCommandCollection is undefined')
+      message.reply('Could not list audio commands.')
+      return
+    }
     try {
-      const audioCommands = await this.audioCommandCollection.getAllTriggers()
+      const audioCommands = await audioCommandCollection.getAllTriggers()
       const commandList =
         '😼😼😼~ÁUDIOS~😼😼😼 \n\n' +
         audioCommands
@@ -34,6 +34,12 @@ export default class AudioCommandActionSet {
   }
 
   addAudioCommand = async (message: Message) => {
+    const { audioCommandCollection } = globalStates
+    if (audioCommandCollection === undefined) {
+      logger.warn('Attempted to add audio command but audioCommandCollection is undefined')
+      message.reply('Could not add audio command.')
+      return
+    }
     const [, trigger] = message.body.split(' ')
     const quotedMessage = await message.getQuotedMessage()
 
@@ -53,7 +59,7 @@ export default class AudioCommandActionSet {
         trigger,
         audioFile: media.data
       }
-      await this.audioCommandCollection.create(audioCommand)
+      await audioCommandCollection.create(audioCommand)
       message.reply('🤖 Comando de áudio adicionado!')
     } catch (error) {
       logger.error('Erro ao adicionar comando de áudio: ', error)
@@ -61,6 +67,12 @@ export default class AudioCommandActionSet {
   }
 
   removeAudioCommand = async (message: Message) => {
+    const { audioCommandCollection } = globalStates
+    if (audioCommandCollection === undefined) {
+      logger.warn('Attempted to remove audio command but audioCommandCollection is undefined')
+      message.reply('Could not remove audio command.')
+      return
+    }
     const trigger = message.body.split(' ')[1]
     if (trigger === '') {
       return await message.reply(
@@ -68,9 +80,9 @@ export default class AudioCommandActionSet {
       )
     }
     try {
-      const find = await this.audioCommandCollection.get(trigger)
+      const find = await audioCommandCollection.get(trigger)
       if (find !== undefined) {
-        this.audioCommandCollection.delete(trigger)
+        audioCommandCollection.delete(trigger)
         message.reply(`🤖 Comando ${trigger} removido com sucesso!`)
       } else {
         message.reply(`🤖 Comando ${trigger} não encontrado!`)

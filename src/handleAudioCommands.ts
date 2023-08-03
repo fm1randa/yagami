@@ -4,6 +4,11 @@ import { logger } from './helpers'
 
 async function playAudio (message: Message, trigger: string) {
   const { audioCommandCollection } = globalStates
+  if (audioCommandCollection === undefined) {
+    logger.warn('Attempted to play audio but audioCommandCollection is undefined')
+    message.reply('Could not play audio.')
+    return
+  }
   /**
    * Checks if there is no char after the trigger
    * @returns boolean
@@ -11,9 +16,8 @@ async function playAudio (message: Message, trigger: string) {
   const isValidTrigger = () => {
     const triggerIndex = message.body.indexOf(trigger)
     const followingChar = message.body[triggerIndex + trigger.length]
-    return (followingChar !== '') ? followingChar === ' ' : true
+    return followingChar !== undefined ? followingChar === ' ' : true
   }
-
   if (message.body.includes(trigger) && isValidTrigger()) {
     message.react('▶️')
     const audioFile = await audioCommandCollection.getAudioFile(trigger)
@@ -32,8 +36,13 @@ async function playAudio (message: Message, trigger: string) {
 
 async function handleAudioCommands (message: Message) {
   const { audioCommandCollection } = globalStates
+  if (audioCommandCollection === undefined) {
+    logger.warn('Attempted to play audio but audioCommandCollection is undefined')
+    message.reply('Could not play audio.')
+    return
+  }
   try {
-    if (((message?.body) === '') || typeof message.body !== 'string') return
+    if (message?.body === '' || typeof message.body !== 'string') return
     const triggers: string[] = await audioCommandCollection.getAllTriggers()
     triggers.forEach((trigger) => {
       playAudio(message, trigger)

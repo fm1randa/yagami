@@ -1,14 +1,12 @@
 import type YagamiClient from '../YagamiClient'
 import { type Message, type Reaction } from 'whatsapp-web.js'
 import type User from '../app/models/User'
-import type UserCollection from '../app/collections/User'
-import type GroupCollection from '../app/collections/Group'
 import { getMsUntilNow } from '.'
 import logger from './logger'
 import { type MessageProps, type TriggerType } from '../Command'
 import mongooseState from '../globalStates'
-import UserActionSet from '../actionSets/UserActionSet'
-import GroupActionSet from '../actionSets/GroupActionSet'
+import { addUser } from '../actionSets/UserActionSet'
+import { addGroup } from '../actionSets/GroupActionSet'
 
 interface MatchesOptionsType {
   message: Message
@@ -25,27 +23,22 @@ interface MessageBodyObject {
 type MessageBody = string | MessageBodyObject
 
 export default class ClientHelpers {
-  private readonly userCollection?: UserCollection
-  private readonly groupCollection?: GroupCollection
-  private readonly userActionSet: UserActionSet
-  private readonly groupActionSet: GroupActionSet
-  constructor () {
-    const { userCollection, groupCollection } = mongooseState
-    this.userCollection = userCollection
-    this.groupCollection = groupCollection
-    this.userActionSet = new UserActionSet()
-    this.groupActionSet = new GroupActionSet()
+  client: YagamiClient
+
+  constructor (client: YagamiClient) {
+    this.client = client
   }
 
-  async cleanupGroup (message: Message, client: YagamiClient) {
-    const contact = await client.getContactById(message.from)
-    const chat = await contact.getChat()
-    if (!chat?.isGroup) return
-    if (this.groupCollection === undefined) {
+  cleanupGroup = async (message: Message) => {
+    const { groupCollection } = mongooseState
+    if (groupCollection === undefined) {
       logger.warn('Attempted to cleanup group but groupCollection is undefined')
       return
     }
-    const group = await this.groupCollection.getById(chat.id._serialized)
+    const contact = await this.client.getContactById(message.from)
+    const chat = await contact.getChat()
+    if (!chat?.isGroup) return
+    const group = await groupCollection.getById(chat.id._serialized)
     if (group === null) return
     if (
       group.lastCleanup === null ||
@@ -57,12 +50,21 @@ export default class ClientHelpers {
     }
   }
 
-  handleSignups (message: Message, client: YagamiClient) {
-    this.userActionSet.addUser(message)
-    this.groupActionSet.addGroup(message, client)
+  handleSignups = (message: Message) => {
+    const { userCollection, groupCollection } = mongooseState
+    if (userCollection === undefined) {
+      logger.warn('Attempted to handle signups but userCollection is undefined')
+      return
+    }
+    if (groupCollection === undefined) {
+      logger.warn('Attempted to handle signups but groupCollection is undefined')
+      return
+    }
+    addUser(message)
+    addGroup(message, this.client)
   }
 
-  static isUselessMessage (message: Message) {
+  static isUselessMessage = (message: Message) => {
     const checkMessageBody = (body: MessageBody) => {
       if (typeof body === 'string') {
         return message.body.includes('🤖')
@@ -77,7 +79,7 @@ export default class ClientHelpers {
     )
   }
 
-  static async matches (matchesOptions: MatchesOptionsType) {
+  static matches = async (matchesOptions: MatchesOptionsType) => {
     const { message, trigger, client } = matchesOptions
     const match = (messageProps: MessageProps | MessageProps[]): boolean => {
       if (Array.isArray(messageProps)) {
@@ -151,48 +153,47 @@ export default class ClientHelpers {
     return matchArray.some((match) => match)
   }
 
-  static async isAdmin (user: User) {
+  static isAdmin = (user: User) => {
     return user?.isAdmin
   }
 
-  async getUserFromMessage (message: Message) {
-    const contact = await message.getContact()
-    if (this.userCollection === undefined) {
+  static getUserFromMessage = async (message: Message) => {
+    const { userCollection } = mongooseState
+    if (userCollection === undefined) {
       logger.warn('Attempted to get user from message but userCollection is undefined')
       return null
     }
-    return await this.userCollection.getById(contact.id._serialized)
+    const contact = await message.getContact()
+    return await userCollection.getById(contact.id._serialized)
   }
 
-  async hasUserPermission (message: Message, restricted: boolean) {
-    const user = await this.getUserFromMessage(message)
+  static hasUserPermission = async (message: Message, restricted: boolean) => {
+    const user = await ClientHelpers.getUserFromMessage(message)
     if (user === null) {
       return false
     }
-    const fromAdmin = await ClientHelpers.isAdmin(user)
+    const fromAdmin = ClientHelpers.isAdmin(user)
     if (restricted && !fromAdmin) {
       return false
     }
     return true
   }
 
-  async checkPermissions ({
+  static checkPermissions = async ({
     message,
     restricted
   }: {
     message: Message
     restricted: boolean
-    client: YagamiClient
-  }): Promise<ChatPermissions> {
-    const userHasPermission = await this.hasUserPermission(message, restricted)
+  }): Promise<ChatPermissions> => {
+    const userHasPermission = await ClientHelpers.hasUserPermission(message, restricted)
     const chatPermissions: ChatPermissions = {
       userHasPermission
     }
     return chatPermissions
   }
 
-  // unused but can be useful
-  static async getReplies (message: Message) {
+  static getReplies = async (message: Message) => {
     const chat = await message.getChat()
     const messages = await chat.fetchMessages({ limit: 100, fromMe: true })
     const msgsWithQuotedMsg = messages.filter(
@@ -213,9 +214,9 @@ export default class ClientHelpers {
     return replies
   }
 
-  static async getReactionMessage (reaction: Reaction, client: YagamiClient) {
+  getReactionMessage = async (reaction: Reaction) => {
     try {
-      const chat = await client.getChatById(reaction.id.remote)
+      const chat = await this.client.getChatById(reaction.id.remote)
       const recentMessages = await chat.fetchMessages({ limit: 10 })
       const message = recentMessages.find(
         (msg) => msg.id.id === reaction.msgId.id
@@ -229,9 +230,9 @@ export default class ClientHelpers {
     }
   }
 
-  static async didMessageMentionMe (message: Message, client: YagamiClient) {
+  didMessageMentionMe = async (message: Message) => {
     const mentions = await message.getMentions()
-    const me = client.info.wid
+    const me = this.client.info.wid
     if (mentions === undefined || (mentions.length === 0)) return false
     if (me === undefined) return false
     return mentions.some(
@@ -239,10 +240,10 @@ export default class ClientHelpers {
     )
   }
 
-  static async getThread (
+  static getThread = async (
     message: Message,
     limit: number = 10
-  ): Promise<Message[]> {
+  ): Promise<Message[]> => {
     const thread: Message[] = []
     let currentMessage: Message = message
     for (let i = 0; i < limit; i++) {

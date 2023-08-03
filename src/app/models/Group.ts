@@ -29,6 +29,9 @@ export default class Group {
   // TODO improve it later (maybe?)
   save = async () => {
     const { groupCollection } = globalStates
+    if (groupCollection === undefined) {
+      throw new Error('Attempted to save group but groupCollection is undefined')
+    }
     const find = await groupCollection.getById(this.contactId._serialized)
     if (find != null) {
       return await groupCollection.update(this.contactId._serialized, this)
