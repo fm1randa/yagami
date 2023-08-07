@@ -14,7 +14,8 @@ import {
   logger,
   startsWith,
   ClientHelpers,
-  measureExecutionTime
+  measureExecutionTime,
+  capString
 } from './helpers'
 import os from 'os'
 import getDefaultCommands from './commands/defaultCommands'
@@ -116,16 +117,26 @@ export default class YagamiClient extends Client {
       }
     ); */
 
-    this.on('message_create', (message) => {
-      handleAudioCommands(message)
-      const { handleSignups } = new ClientHelpers(this)
-      if (this.handleSignups) {
-        handleSignups(message)
+    this.on('message_create', async (message) => {
+      try {
+        logger.debug(`Message from ${message.from} received: ${capString(message.body, 50)}`)
+        handleAudioCommands(message)
+
+        const { handleSignups } = new ClientHelpers(this)
+        if (this.handleSignups) {
+          await handleSignups(message)
+        }
+
+        if (ClientHelpers.isUselessMessage(message)) {
+          logger.debug('Message is useless, ignoring.')
+          return
+        }
+
+        logger.debug('Executing commands...')
+        this.executeCommands(message)
+      } catch (error) {
+        logger.error('Error while handling a message.', error)
       }
-      if (ClientHelpers.isUselessMessage(message)) {
-        return
-      }
-      this.executeCommands(message)
     })
 
     this.on('message_reaction', (reaction) => {
@@ -156,9 +167,10 @@ export default class YagamiClient extends Client {
   }
 
   async executeCommands (message: Message) {
-    this.commands.forEach((command) => {
-      this.executeCommand(message, command)
-    })
+    const tasks = this.commands.map(async (command) =>
+      await this.executeCommand(message, command)
+    )
+    await Promise.all(tasks)
   }
 
   async executeCommand (message: Message, command: Command) {
@@ -170,14 +182,17 @@ export default class YagamiClient extends Client {
       trigger
     })
     if (!messageMatchesTrigger) {
-      return
+      return await Promise.resolve(null)
     }
-    const { userHasPermission } = await checkPermissions({
-      message,
-      restricted
-    })
-    if (!userHasPermission) {
-      return
+    if (this.handleSignups && restricted) {
+      const { userHasPermission } = await checkPermissions({
+        message,
+        restricted
+      })
+      if (!userHasPermission) {
+        message.reply('🔒 ❌ You don\'t have permission to execute this command.')
+        return await Promise.resolve(null)
+      }
     }
 
     const { count, finalExecutionDate } = await measureExecutionTime(
@@ -198,7 +213,7 @@ export default class YagamiClient extends Client {
       this.updateCommandsExecuted(commandExecuted)
     }
     this.emit('command_executed', commandExecuted, message)
-    await Promise.resolve()
+    return await Promise.resolve(commandExecuted)
   }
 
   getChecker (checkRule: CheckRule) {

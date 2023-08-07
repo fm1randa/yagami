@@ -50,7 +50,7 @@ export default class ClientHelpers {
     }
   }
 
-  handleSignups = (message: Message) => {
+  handleSignups = async (message: Message) => {
     const { userCollection, groupCollection } = mongooseState
     if (userCollection === undefined) {
       logger.warn('Attempted to handle signups but userCollection is undefined')
@@ -60,8 +60,10 @@ export default class ClientHelpers {
       logger.warn('Attempted to handle signups but groupCollection is undefined')
       return
     }
-    addUser(message)
-    addGroup(message, this.client)
+    await Promise.all([
+      addUser(message),
+      addGroup(message, this.client)
+    ])
   }
 
   static isUselessMessage = (message: Message) => {
@@ -168,12 +170,18 @@ export default class ClientHelpers {
   }
 
   static hasUserPermission = async (message: Message, restricted: boolean) => {
+    if (!restricted) {
+      return true
+    }
     const user = await ClientHelpers.getUserFromMessage(message)
     if (user === null) {
+      message.reply('🐛 I could not find info about you and that is why I can not run this command right now.')
+      logger.warn('Attempted to get user permission but user is null. Command WON\'T be executed.')
       return false
     }
     const fromAdmin = ClientHelpers.isAdmin(user)
-    if (restricted && !fromAdmin) {
+    if (!fromAdmin) {
+      logger.warn('A non-admin user tried to execute a restricted command. Command WON\'T be executed.')
       return false
     }
     return true

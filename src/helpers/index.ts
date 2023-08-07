@@ -14,6 +14,7 @@ import ClientHelpers from './ClientHelpers'
 import getMsUntilNow from './getMsUntilNow'
 import measureExecutionTime from './measureExecutionTime'
 import logger from './logger'
+import { capString } from './capString'
 
 export {
   cloneDate,
@@ -31,5 +32,6 @@ export {
   ClientHelpers,
   getMsUntilNow,
   measureExecutionTime,
-  logger
+  logger,
+  capString
 }

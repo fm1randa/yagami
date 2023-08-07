@@ -20,6 +20,7 @@ const defaultFormat = combine(
 )
 
 const logger = createLogger({
+  level: 'debug',
   format: defaultFormat,
   transports: [
     new transports.File({
