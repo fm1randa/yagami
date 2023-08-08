@@ -12,14 +12,13 @@ async function createPackageFile() {
     resolve(packagePath, './package.json'),
     'utf8'
   );
-  const { scripts, devDependencies, ...packageOthers } = JSON.parse(
-    packageData
-  );
+  const { scripts, devDependencies, ...packageOthers } =
+    JSON.parse(packageData);
 
   const newPackageData = {
     ...packageOthers,
     main: './index.js',
-    types: './index.d.ts',
+    types: './index.d.ts'
   };
 
   delete newPackageData.files;

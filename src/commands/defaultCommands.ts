@@ -1,11 +1,11 @@
-import AudioCommandActionSet from '../actionSets/AudioCommandActionSet'
-import AdminActionSet from '../actionSets/AdminActionSet'
-import Command from '../Command'
-import addFirstAdmin from './addFirstAdmin'
+import AudioCommandActionSet from '../actionSets/AudioCommandActionSet';
+import AdminActionSet from '../actionSets/AdminActionSet';
+import Command from '../Command';
+import addFirstAdmin from './addFirstAdmin';
 
-export default function getDefaultCommands () {
-  const adminActionSet = new AdminActionSet()
-  const audioCommandActionSet = new AudioCommandActionSet()
+export default function getDefaultCommands() {
+  const adminActionSet = new AdminActionSet();
+  const audioCommandActionSet = new AudioCommandActionSet();
 
   return [
     addFirstAdmin,
@@ -69,5 +69,5 @@ export default function getDefaultCommands () {
       help: '!rmaudio <comando>\n\nExemplo: !rmaudio !abelha',
       countAsCommandExecuted: false
     })
-  ]
+  ];
 }

@@ -1,20 +1,20 @@
-function fixTimezone (date: Date, options?: { add: boolean }) {
-  const isServer = process.env.SERVER === 'true'
-  const now = new Date()
-  const timezoneInMinutes = now.getTimezoneOffset()
-  const timezoneInHours = timezoneInMinutes / 60
-  const timezoneBrazil = timezoneInHours - 3
-  const timezoneBrazilInMS = timezoneBrazil * 60 * 60 * 1000
+function fixTimezone(date: Date, options?: { add: boolean }) {
+  const isServer = process.env.SERVER === 'true';
+  const now = new Date();
+  const timezoneInMinutes = now.getTimezoneOffset();
+  const timezoneInHours = timezoneInMinutes / 60;
+  const timezoneBrazil = timezoneInHours - 3;
+  const timezoneBrazilInMS = timezoneBrazil * 60 * 60 * 1000;
 
   if (!isServer) {
-    return
+    return;
   }
   if (options?.add === true) {
-    date.setTime(date.getTime() + timezoneBrazilInMS)
+    date.setTime(date.getTime() + timezoneBrazilInMS);
   } else {
-    date.setTime(date.getTime() - timezoneBrazilInMS)
+    date.setTime(date.getTime() - timezoneBrazilInMS);
   }
-  return date
+  return date;
 }
 
-export default fixTimezone
+export default fixTimezone;

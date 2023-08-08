@@ -31,16 +31,16 @@ npm install wwebjs-yagami
 ### 🔎 Example
 
 ```ts
-import { YagamiClient, connectToDatabase } from "wwebjs-yagami";
-import commands from "./commands";
+import { YagamiClient, connectToDatabase } from 'wwebjs-yagami';
+import commands from './commands';
 async function main() {
-  const isServer = process.env.SERVER === "true";
+  const isServer = process.env.SERVER === 'true';
 
   const { store } = await connectToDatabase();
   const authStrategy = new RemoteAuth({
     clientId: process.env.CLIENT_ID,
     store,
-    backupSyncIntervalMs: 5 * 60 * 1000,
+    backupSyncIntervalMs: 5 * 60 * 1000
   });
 
   const clientOptions: YagamiOptions = {
@@ -48,9 +48,9 @@ async function main() {
     authStrategy,
     puppeteer: {
       headless: true,
-      [isServer && "executablePath"]: "/usr/bin/chromium-browser",
-      [isServer && "args"]: ["--no-sandbox"],
-    },
+      [isServer && 'executablePath']: '/usr/bin/chromium-browser',
+      [isServer && 'args']: ['--no-sandbox']
+    }
   };
 
   const client = new YagamiClient(commands, clientOptions);

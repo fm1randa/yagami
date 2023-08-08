@@ -35,28 +35,28 @@ export default function action(message: Message, client: YagamiClient) {
 ### 📄 commands.ts
 
 ```ts
-import action from "./action";
-import { Command } from "wwebjs-yagami";
-import { MessageTypes } from "whatsapp-web.js";
+import action from './action';
+import { Command } from 'wwebjs-yagami';
+import { MessageTypes } from 'whatsapp-web.js';
 
 const commands = [
-  new Command("Hello world command", {
+  new Command('Hello world command', {
     trigger: {
-      mainText: "!hello",
-      mainCheckRule: "includes",
+      mainText: '!hello',
+      mainCheckRule: 'includes',
       inAnyChat: {
         type: MessageTypes.TEXT,
         body: {
-          checkRule: "exactly",
-          text: "!hw", // H ello W orld
-        },
-      },
+          checkRule: 'exactly',
+          text: '!hw' // H ello W orld
+        }
+      }
     },
     action,
     restricted: false,
     help: `Type "!hw" or "!hello" in any chat to execute this command =)`,
-    countAsCommandExecuted: true,
-  }),
+    countAsCommandExecuted: true
+  })
 ];
 export default commands;
 ```
@@ -130,14 +130,14 @@ You may set the `trigger` to check for some specific message properties. For exa
 You may want to execute the action if the message is a image, includes specific caption and was sent in a group. You can do it by setting the `inGroup` property to:
 
 ```ts
-import { MessageTypes } from "whatsapp-web.js";
+import { MessageTypes } from 'whatsapp-web.js';
 const { IMAGE } = MessageTypes;
 
 const imageWithCaption = {
   type: IMAGE,
   body: {
-    checkRule: "includes",
-    text: "!helloworld",
-  },
+    checkRule: 'includes',
+    text: '!helloworld'
+  }
 };
 ```
