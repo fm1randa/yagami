@@ -18,7 +18,7 @@
     "dist/**/*"
   ],
   "scripts": {
-    "preinstall": "only-allow pnpm",
+    "preinstall": "npx only-allow pnpm",
     "build": "rm -rf ./dist && tsc -b && echo ✅ wwebjs-yagami built successfully!",
     "dev": "nodemon --exec pnpm build",
     "pub": "pnpm build && node ./scripts/frank-dist.mjs && pnpm publish ./dist",
