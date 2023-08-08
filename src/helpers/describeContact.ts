@@ -1,10 +1,10 @@
-import { type Contact } from 'whatsapp-web.js'
+import { type Contact } from 'whatsapp-web.js';
 
-function describeContact (contact: Contact) {
+function describeContact(contact: Contact) {
   if (contact.isGroup && contact.name !== undefined) {
-    return `[G] ${contact.name}`
+    return `[G] ${contact.name}`;
   } else {
-    return `${contact.name ?? contact.pushname} - ${contact.number}`
+    return `${contact.name ?? contact.pushname} - ${contact.number}`;
   }
 }
-export default describeContact
+export default describeContact;

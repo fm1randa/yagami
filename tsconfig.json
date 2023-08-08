@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-      "target": "es2016",
-      "module": "commonjs",
-      "declaration": true,
-      "outDir": "./dist",
-      "esModuleInterop": true,
-      "forceConsistentCasingInFileNames": true,
-      "strict": false,
-      "strictNullChecks": true
+    "target": "es2016",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "strictNullChecks": true
   },
   "include": ["./src/**/*"]
 }

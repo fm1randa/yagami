@@ -1,4 +1,4 @@
-import YagamiClient, { type YagamiOptions } from './YagamiClient'
+import YagamiClient, { type YagamiOptions } from './YagamiClient';
 import Command, {
   type CommandAction,
   type CheckRule,
@@ -6,10 +6,10 @@ import Command, {
   type CommandAttributes,
   type MessageProps,
   type TriggerType
-} from './Command'
-import { connectToDatabase } from './app/database'
+} from './Command';
+import { connectToDatabase } from './app/database';
 
-export default YagamiClient
+export default YagamiClient;
 export {
   Command,
   type YagamiOptions,
@@ -20,4 +20,4 @@ export {
   type MessageProps,
   type TriggerType,
   connectToDatabase
-}
+};

@@ -57,7 +57,7 @@ import {
   WAState,
   type WebCacheOptions,
   WhatsWebURL
-} from 'whatsapp-web.js'
+} from 'whatsapp-web.js';
 
 export {
   Client,
@@ -118,4 +118,4 @@ export {
   WAState,
   type WebCacheOptions,
   WhatsWebURL
-}
+};

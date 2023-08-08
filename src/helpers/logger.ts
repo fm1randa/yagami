@@ -1,13 +1,13 @@
-import { createLogger, format, transports } from 'winston'
-const { timestamp, errors, splat, json, printf, combine, colorize } = format
+import { createLogger, format, transports } from 'winston';
+const { timestamp, errors, splat, json, printf, combine, colorize } = format;
 
 const myFormat = printf(({ level, timestamp, message, ...rest }) => {
-  const timestampString = typeof timestamp === 'string' ? timestamp : ''
-  const messageString = typeof message === 'string' ? message : ''
+  const timestampString = typeof timestamp === 'string' ? timestamp : '';
+  const messageString = typeof message === 'string' ? message : '';
   return `[${timestampString}] ${level}: ${messageString}\n${
-        (Object.keys(rest).length > 0) ? JSON.stringify(rest, null, 2) : ''
-    }`
-})
+    Object.keys(rest).length > 0 ? JSON.stringify(rest, null, 2) : ''
+  }`;
+});
 
 const defaultFormat = combine(
   timestamp({
@@ -17,7 +17,7 @@ const defaultFormat = combine(
   splat(),
   json(),
   myFormat
-)
+);
 
 const logger = createLogger({
   level: 'debug',
@@ -36,6 +36,6 @@ const logger = createLogger({
       format: combine(colorize(), defaultFormat)
     })
   ]
-})
+});
 
-export default logger
+export default logger;

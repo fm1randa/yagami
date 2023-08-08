@@ -1,45 +1,45 @@
-import { type Mongoose } from 'mongoose'
-import type UserCollection from './app/collections/User'
-import type GroupCollection from './app/collections/Group'
-import type AudioCommandCollection from './app/collections/AudioCommand'
+import { type Mongoose } from 'mongoose';
+import type UserCollection from './app/collections/User';
+import type GroupCollection from './app/collections/Group';
+import type AudioCommandCollection from './app/collections/AudioCommand';
 
 class GlobalStates {
-  private _mongoose?: Mongoose
-  private _groupCollection?: GroupCollection
-  private _userCollection?: UserCollection
-  private _audioCollection?: AudioCommandCollection
+  private _mongoose?: Mongoose;
+  private _groupCollection?: GroupCollection;
+  private _userCollection?: UserCollection;
+  private _audioCollection?: AudioCommandCollection;
 
-  public get audioCommandCollection (): AudioCommandCollection | undefined {
-    return this._audioCollection
+  public get audioCommandCollection(): AudioCommandCollection | undefined {
+    return this._audioCollection;
   }
 
-  public set audioCommandCollection (value: AudioCommandCollection) {
-    this._audioCollection = value
+  public set audioCommandCollection(value: AudioCommandCollection) {
+    this._audioCollection = value;
   }
 
-  public get userCollection (): UserCollection | undefined {
-    return this._userCollection
+  public get userCollection(): UserCollection | undefined {
+    return this._userCollection;
   }
 
-  public set userCollection (value: UserCollection) {
-    this._userCollection = value
+  public set userCollection(value: UserCollection) {
+    this._userCollection = value;
   }
 
-  public get groupCollection (): GroupCollection | undefined {
-    return this._groupCollection
+  public get groupCollection(): GroupCollection | undefined {
+    return this._groupCollection;
   }
 
-  public set groupCollection (value: GroupCollection) {
-    this._groupCollection = value
+  public set groupCollection(value: GroupCollection) {
+    this._groupCollection = value;
   }
 
-  public get mongoose (): Mongoose | undefined {
-    return this._mongoose
+  public get mongoose(): Mongoose | undefined {
+    return this._mongoose;
   }
 
-  public set mongoose (mongoose: Mongoose) {
-    this._mongoose = mongoose
+  public set mongoose(mongoose: Mongoose) {
+    this._mongoose = mongoose;
   }
 }
 
-export default new GlobalStates()
+export default new GlobalStates();
