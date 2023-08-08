@@ -1,14 +1,14 @@
-const { resolve, join, basename } = require('path');
-const { readFile, writeFile, copy } = require('fs-extra');
+import { resolve, join, basename } from 'path';
+import fs from 'fs-extra';
 
 const packagePath = process.cwd();
 const distPath = join(packagePath, './dist');
 
 const writeJson = (targetPath, obj) =>
-  writeFile(targetPath, JSON.stringify(obj, null, 2), 'utf8');
+  fs.writeFile(targetPath, JSON.stringify(obj, null, 2), 'utf8');
 
 async function createPackageFile() {
-  const packageData = await readFile(
+  const packageData = await fs.readFile(
     resolve(packagePath, './package.json'),
     'utf8'
   );
@@ -32,7 +32,7 @@ async function createPackageFile() {
 async function includeFileInBuild(file) {
   const sourcePath = resolve(packagePath, file);
   const targetPath = resolve(distPath, basename(file));
-  await copy(sourcePath, targetPath);
+  await fs.copy(sourcePath, targetPath);
   console.log(`Copied ${sourcePath} to ${targetPath}`);
 }
 
