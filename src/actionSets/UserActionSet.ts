@@ -45,7 +45,7 @@ export const addUser = async (message: Message) => {
         user.contactId.server = contact.id.server;
         user.contactId.user = contact.id.user;
       }
-      await userCollection.update(oldSerialized, user);
+      return await userCollection.update(oldSerialized, user);
     }
     logger.debug('User does not exist, creating...');
     const newUser = new User({
@@ -53,7 +53,7 @@ export const addUser = async (message: Message) => {
       name: contact.name ?? contact.pushname,
       isMyContact: contact.isMyContact
     });
-    await userCollection.create(newUser);
+    return await userCollection.create(newUser);
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error.message);

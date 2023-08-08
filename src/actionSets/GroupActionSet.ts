@@ -31,14 +31,26 @@ export const addGroup = async (message: Message, client: YagamiClient) => {
   try {
     const idSerialized = message.from;
     const group = await groupCollection.getById(idSerialized);
-    if (group != null) return;
     const groupContact = await client.getContactById(idSerialized);
+    if (group !== null) {
+      logger.debug('Group already exists, updating...');
+      const oldSerialized = group.contactId.user;
+      if (group.name !== message.from) {
+        group.name = groupContact.name ?? groupContact.pushname;
+      }
+      if (oldSerialized !== message.from) {
+        group.contactId.user = groupContact.id.user;
+        group.contactId.server = groupContact.id.server;
+        group.contactId._serialized = groupContact.id._serialized;
+      }
+      return await groupCollection.update(oldSerialized, group);
+    }
     if (!groupContact.isGroup) return;
     const newGroup = new Group({
       contactId: groupContact.id,
       name: groupContact.name ?? groupContact.pushname
     });
-    await groupCollection.create(newGroup);
+    return await groupCollection.create(newGroup);
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error.message);
