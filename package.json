@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "dotenv": "16.3.1",
-    "mongoose": "7.4.1",
+    "mongoose": "7.4.4",
     "qrcode-terminal": "0.12.0",
     "whatsapp-web.js": "github:fm1randa/whatsapp-web.js",
     "winston": "3.10.0"
