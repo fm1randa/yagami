@@ -16,7 +16,7 @@ dependencies:
     version: 0.12.0
   whatsapp-web.js:
     specifier: github:fm1randa/whatsapp-web.js
-    version: github.com/fm1randa/whatsapp-web.js/42bfdfc221b7c6ba3c9eeba12d12afee7d532d54
+    version: git@github.com+fm1randa/whatsapp-web.js/b8133c48767c1598dac161ab9d598c4d49023fea
   winston:
     specifier: 3.10.0
     version: 3.10.0
@@ -24,7 +24,7 @@ dependencies:
 devDependencies:
   '@types/node':
     specifier: ^20.2.3
-    version: 20.2.3
+    version: 20.7.1
   '@types/qrcode-terminal':
     specifier: ^0.12.0
     version: 0.12.0
@@ -147,8 +147,8 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
-  /@types/node@20.2.3:
-    resolution: {integrity: sha512-pg9d0yC4rVNWQzX8U7xb4olIOFuuVL9za3bzMT2pu2SU0SNEi66i2qrvhE2qt0HvkhuCaWJu7pLNOt/Pj8BIrw==}
+  /@types/node@20.7.1:
+    resolution: {integrity: sha512-LT+OIXpp2kj4E2S/p91BMe+VgGX2+lfO+XTpfXhh+bCk2LkQtHZSub8ewFBMGP5ClysPjTDFa4sMI8Q3n4T0wg==}
 
   /@types/qrcode-terminal@0.12.0:
     resolution: {integrity: sha512-g0fQKl3IVnUePV8tLkiBTduxAVSZsXts444T2aMfjOEGxd7XoeSIs16/AmRe2NlcJLqbvsOBSXov7dKSo4wigA==}
@@ -169,7 +169,7 @@ packages:
   /@types/whatwg-url@8.2.2:
     resolution: {integrity: sha512-FtQu10RWgn3D9U4aazdwIE2yzphmTJREDqNdODHrbrZmmMqI0vMheC/6NE/J1Yveaj8H+ela+YwWTjq5PGmuhA==}
     dependencies:
-      '@types/node': 20.2.3
+      '@types/node': 20.7.1
       '@types/webidl-conversions': 7.0.0
     dev: false
 
@@ -177,7 +177,7 @@ packages:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     requiresBuild: true
     dependencies:
-      '@types/node': 20.2.3
+      '@types/node': 20.7.1
     dev: false
     optional: true
 
@@ -2825,6 +2825,7 @@ packages:
 
   /wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+    requiresBuild: true
 
   /ws@8.5.0:
     resolution: {integrity: sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==}
@@ -2861,10 +2862,10 @@ packages:
     dev: false
     optional: true
 
-  github.com/fm1randa/whatsapp-web.js/42bfdfc221b7c6ba3c9eeba12d12afee7d532d54:
-    resolution: {tarball: https://codeload.github.com/fm1randa/whatsapp-web.js/tar.gz/42bfdfc221b7c6ba3c9eeba12d12afee7d532d54}
+  git@github.com+fm1randa/whatsapp-web.js/b8133c48767c1598dac161ab9d598c4d49023fea:
+    resolution: {commit: b8133c48767c1598dac161ab9d598c4d49023fea, repo: git@github.com:fm1randa/whatsapp-web.js.git, type: git}
     name: whatsapp-web.js
-    version: 1.21.0
+    version: 1.22.1
     engines: {node: '>=12.0.0'}
     dependencies:
       '@pedroslopez/moduleraid': 5.0.2
